@@ -53,6 +53,12 @@
 7. [Data Validation](#data-validation)
     - Validation for Various Request Types
 
+# Video on youtube:
+
+<a href="https://www.youtube.com/watch?v=uPIp8MLDDec">
+  <img src="docs/img/youtube.png" width="50%" />
+</a>
+
 ---
 
 ## 1. Introduction
