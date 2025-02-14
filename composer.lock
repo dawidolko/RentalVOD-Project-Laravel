@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "61d2df360e6410dea20f02326142b498",
+    "content-hash": "e6cedd2585ee84f715881be0cc7bf3fd",
     "packages": [
         {
             "name": "bensampo/laravel-enum",
-            "version": "v6.11.0",
+            "version": "v6.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/BenSampo/laravel-enum.git",
-                "reference": "0f82b99bbbe12fe38071edf4a9f9063419334de4"
+                "reference": "facd826e65fe44b3c0a4f9c726c2433cf8a4a9ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BenSampo/laravel-enum/zipball/0f82b99bbbe12fe38071edf4a9f9063419334de4",
-                "reference": "0f82b99bbbe12fe38071edf4a9f9063419334de4",
+                "url": "https://api.github.com/repos/BenSampo/laravel-enum/zipball/facd826e65fe44b3c0a4f9c726c2433cf8a4a9ea",
+                "reference": "facd826e65fe44b3c0a4f9c726c2433cf8a4a9ea",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
             ],
             "support": {
                 "issues": "https://github.com/BenSampo/laravel-enum/issues",
-                "source": "https://github.com/BenSampo/laravel-enum/tree/v6.11.0"
+                "source": "https://github.com/BenSampo/laravel-enum/tree/v6.11.1"
             },
             "funding": [
                 {
@@ -96,7 +96,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-19T21:53:15+00:00"
+            "time": "2024-08-21T10:45:41+00:00"
         },
         {
             "name": "brick/math",
@@ -4392,16 +4392,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v14.9.0",
+            "version": "v16.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "7165f64ec1b19cb0ce288d553909cd68d8e6a3b1"
+                "reference": "05c7c3a8a15b1bc396f09d17c88539c0db3d3255"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/7165f64ec1b19cb0ce288d553909cd68d8e6a3b1",
-                "reference": "7165f64ec1b19cb0ce288d553909cd68d8e6a3b1",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/05c7c3a8a15b1bc396f09d17c88539c0db3d3255",
+                "reference": "05c7c3a8a15b1bc396f09d17c88539c0db3d3255",
                 "shasum": ""
             },
             "require": {
@@ -4445,9 +4445,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stripe/stripe-php/issues",
-                "source": "https://github.com/stripe/stripe-php/tree/v14.9.0"
+                "source": "https://github.com/stripe/stripe-php/tree/v16.5.1"
             },
-            "time": "2024-05-30T20:12:41+00:00"
+            "time": "2025-02-07T21:24:29+00:00"
         },
         {
             "name": "symfony/clock",
@@ -7066,16 +7066,16 @@
         },
         {
             "name": "barryvdh/laravel-ide-helper",
-            "version": "v3.0.0",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/barryvdh/laravel-ide-helper.git",
-                "reference": "bc1d67f01ce8c77e3f97d48ba51fa1d81874f622"
+                "reference": "591e7d665fbab8a3b682e451641706341573eb80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/laravel-ide-helper/zipball/bc1d67f01ce8c77e3f97d48ba51fa1d81874f622",
-                "reference": "bc1d67f01ce8c77e3f97d48ba51fa1d81874f622",
+                "url": "https://api.github.com/repos/barryvdh/laravel-ide-helper/zipball/591e7d665fbab8a3b682e451641706341573eb80",
+                "reference": "591e7d665fbab8a3b682e451641706341573eb80",
                 "shasum": ""
             },
             "require": {
@@ -7106,13 +7106,13 @@
             },
             "type": "library",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "3.0-dev"
-                },
                 "laravel": {
                     "providers": [
                         "Barryvdh\\LaravelIdeHelper\\IdeHelperServiceProvider"
                     ]
+                },
+                "branch-alias": {
+                    "dev-master": "3.1-dev"
                 }
             },
             "autoload": {
@@ -7144,7 +7144,7 @@
             ],
             "support": {
                 "issues": "https://github.com/barryvdh/laravel-ide-helper/issues",
-                "source": "https://github.com/barryvdh/laravel-ide-helper/tree/v3.0.0"
+                "source": "https://github.com/barryvdh/laravel-ide-helper/tree/v3.1.0"
             },
             "funding": [
                 {
@@ -7156,7 +7156,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-01T12:53:18+00:00"
+            "time": "2024-07-12T14:20:51+00:00"
         },
         {
             "name": "barryvdh/reflection-docblock",
@@ -11094,12 +11094,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
