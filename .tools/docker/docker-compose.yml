@@ -1,0 +1,79 @@
+name: RentalVod-Project
+
+services:
+    app:
+        build:
+            context: ../..
+            dockerfile: .tools/docker/Dockerfile
+        container_name: rentalvod_app
+        restart: unless-stopped
+        working_dir: /var/www/html
+        volumes:
+            - ../../:/var/www/html
+            - ./php.ini:/usr/local/etc/php/conf.d/custom.ini
+        ports:
+            - "8000:80"
+        networks:
+            - rentalvod
+        depends_on:
+            - db
+            - redis
+        environment:
+            - APP_ENV=local
+            - APP_DEBUG=true
+            - DB_CONNECTION=mysql
+            - DB_HOST=db
+            - DB_PORT=3306
+            - DB_DATABASE=rentalvod
+            - DB_USERNAME=rentalvod
+            - DB_PASSWORD=secret
+            - REDIS_HOST=redis
+            - REDIS_PORT=6379
+
+    db:
+        image: mysql:8.0
+        container_name: rentalvod_db
+        restart: unless-stopped
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_DATABASE: rentalvod
+            MYSQL_USER: rentalvod
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - db_data:/var/lib/mysql
+        networks:
+            - rentalvod
+
+    redis:
+        image: redis:7-alpine
+        container_name: rentalvod_redis
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
+        networks:
+            - rentalvod
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: rentalvod_phpmyadmin
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        environment:
+            PMA_HOST: db
+            PMA_PORT: 3306
+            MYSQL_ROOT_PASSWORD: root
+        networks:
+            - rentalvod
+        depends_on:
+            - db
+
+networks:
+    rentalvod:
+        driver: bridge
+
+volumes:
+    db_data:
+        driver: local
