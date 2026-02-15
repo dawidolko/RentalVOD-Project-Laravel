@@ -1,4 +1,4 @@
-# Project Documentation
+# Project Documentation 
 
 **Author:** Dawid Olko, 125148  
 **Course and Year:** Computer Science, 2nd Year, Full-time (3.5-year)  
