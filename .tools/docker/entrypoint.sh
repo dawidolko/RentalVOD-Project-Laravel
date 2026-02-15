@@ -12,19 +12,25 @@ fi
 # Instalacja zależności Composer
 if [ ! -d "/var/www/html/vendor" ]; then
     echo "📦 Instalacja zależności PHP (Composer)..."
-    composer install --no-interaction --optimize-autoloader
+    composer update --no-interaction --optimize-autoloader
 else
     echo "✅ Zależności PHP już zainstalowane"
 fi
 
-# Instalacja zależności NPM i budowanie assets
+# Instalacja zależności NPM
 if [ ! -d "/var/www/html/node_modules" ]; then
     echo "📦 Instalacja zależności Node.js..."
     npm install
+else
+    echo "✅ Zależności Node.js już zainstalowane"
+fi
+
+# Budowanie assets (zawsze)
+if [ ! -d "/var/www/html/public/build" ]; then
     echo "🔨 Budowanie assets..."
     npm run build
 else
-    echo "✅ Zależności Node.js już zainstalowane"
+    echo "✅ Assets już zbudowane"
 fi
 
 # Generowanie klucza aplikacji jeśli nie istnieje
@@ -50,16 +56,17 @@ done
 echo "🗄️  Uruchamianie migracji..."
 php artisan migrate --force --no-interaction
 
-# Uruchamianie seederów (tylko jeśli są nowe migracje lub pusta baza)
-TABLE_COUNT=$(php artisan db:show 2>/dev/null | grep -oP 'Tables\s+\K\d+' || echo "0")
-if [ "$TABLE_COUNT" -gt 0 ]; then
-    USER_COUNT=$(php artisan tinker --execute="echo \DB::table('users')->count();" 2>/dev/null || echo "0")
-    if [ "$USER_COUNT" = "0" ]; then
-        echo "📊 Wypełnianie bazy danymi testowymi..."
-        php artisan db:seed --force --no-interaction
-    else
-        echo "✅ Baza danych już zawiera dane"
-    fi
+# Utworzenie storage link
+echo "🔗 Tworzenie linku storage..."
+php artisan storage:link --force
+
+# Sprawdzenie czy trzeba uruchomić seedery
+USER_COUNT=$(php artisan tinker --execute="echo \\App\\Models\\User::count();" 2>/dev/null | tail -1 | tr -d '=>' || echo "0")
+if [ "$USER_COUNT" = "0" ] || [ -z "$USER_COUNT" ]; then
+    echo "📊 Wypełnianie bazy danymi testowymi..."
+    php artisan db:seed --force --no-interaction
+else
+    echo "✅ Baza danych już zawiera dane ($USER_COUNT użytkowników)"
 fi
 
 # Nadawanie uprawnień
