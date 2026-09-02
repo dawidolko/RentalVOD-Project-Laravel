@@ -1,3 +1,11 @@
+{{--
+    Arkusz karuzeli ladowany razem z fragmentem, tak samo jak robi to
+    `layouts/slider.blade.php`. Bez niego reguly `.top-movies-slide { display:
+    none }` nie obowiazywaly i wszystkie dziesiec slajdow wyswietlalo sie naraz,
+    jeden pod drugim, z rozjezdzonymi tlami.
+--}}
+<link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
+
 <section class="rv-section top-movies-slider" id="topMoviesSlider" aria-labelledby="top10-heading">
     <div class="rv-section-title">
         <h2 class="unique-title" id="top10-heading">Top 10 najczęściej wypożyczanych</h2>
