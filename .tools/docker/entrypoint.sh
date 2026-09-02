@@ -10,15 +10,23 @@ if [ ! -f "/var/www/html/.env" ]; then
 fi
 
 # Instalacja zależności Composer
-if [ ! -d "/var/www/html/vendor" ]; then
+# Sprawdzamy `autoload.php`, nie sam katalog: przerwana instalacja zostawia
+# pusty `vendor/`, ktory przechodzil ten warunek jako "gotowe" — artisan
+# wywalal sie potem na brakujacym autoloaderze i kontener restartowal w kolko.
+if [ ! -f "/var/www/html/vendor/autoload.php" ]; then
     echo "📦 Instalacja zależności PHP (Composer)..."
-    composer update --no-interaction --optimize-autoloader
+    # `install`, nie `update`: lockfile przypina wersje, ktore z ta aplikacja
+    # dzialaja. `composer update` ignorowal go i probowal pobrac najnowsze
+    # paczki, a te sa blokowane przez doradztwa bezpieczenstwa Packagista —
+    # kontener wpadal przez to w petle restartow i aplikacja nigdy nie wstawala.
+    composer install --no-interaction --optimize-autoloader \
+        || composer install --no-interaction --optimize-autoloader --no-scripts
 else
     echo "✅ Zależności PHP już zainstalowane"
 fi
 
 # Instalacja zależności NPM
-if [ ! -d "/var/www/html/node_modules" ]; then
+if [ ! -d "/var/www/html/node_modules/vite" ]; then
     echo "📦 Instalacja zależności Node.js..."
     npm install
 else
