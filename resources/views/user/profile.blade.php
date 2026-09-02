@@ -1,601 +1,534 @@
 @include('layouts.html')
-@include('layouts.head', ['pageTitle' => 'RentalVOD - profil użytkownika'])
+@include('layouts.head', [
+    'pageTitle' => 'Mój profil - RentalVOD',
+    'metaDescription' => 'Twój profil w RentalVOD: aktualne wypożyczenia, znajomi, polecone filmy i punkty lojalnościowe.',
+    'robots' => 'noindex, nofollow',
+])
 
-<head>
-    <link rel="stylesheet" href="{{ asset('css/styleProfile.css') }}">
-</head>
-
-<body style="overflow-x: hidden;">
+<body>
     @include('layouts.navbar')
 
-    <div class="row mt-4 mb-4 text-center" style="text-align: center;">
-        <div class="col-12" style="display: flex; flex-direction: column; align-items: center;">
-            <img src="{{ asset('storage/img/logo.webp') }}" alt="Logo" class="img-fluid" style="max-width: 150px; margin-bottom: 20px; border-radius: 50">
-            <h1>Twój profil</h1>
-        </div>
+    <div class="rv-page">
+        @include('layouts.breadcrumbs', ['crumbs' => [['label' => 'Mój profil']]])
     </div>
 
-    @if (Auth::check())
-    <div class="container mt-5">
+    <main id="main-content" class="rv-page" style="padding-top: 0;">
+        @if (Auth::check())
+            @php $rvUser = Auth::user(); @endphp
 
-        @include('layouts.success')
+            @include('layouts.success')
+            @include('layouts.error')
+            @include('layouts.errors')
 
+            {{-- Loyalty point notifications are pushed here by profile.js. --}}
+            <div id="snackbar" role="status" aria-live="polite"></div>
 
-        @include('layouts.error')
+            <h1 class="visually-hidden">Profil użytkownika {{ $rvUser->first_name }} {{ $rvUser->last_name }}</h1>
 
+            {{-- Account summary --}}
+            <section class="card mb-5" aria-labelledby="account-heading">
+                <div class="card-body" style="padding: var(--rv-space-5);">
+                    <div class="row g-5 align-items-start">
+                        <div class="col-md-8">
+                            <h2 id="account-heading">{{ $rvUser->first_name }} {{ $rvUser->last_name }}</h2>
 
-        @include('layouts.errors')
+                            <dl class="row mt-4">
+                                <dt class="col-sm-4">E-mail</dt>
+                                <dd class="col-sm-8">{{ $rvUser->email }}</dd>
 
-        <div id="snackbar"></div>
+                                <dt class="col-sm-4">Adres</dt>
+                                <dd class="col-sm-8">{{ $rvUser->address }}</dd>
 
+                                @if ($rvUser->role_id != 1)
+                                    <dt class="col-sm-4">Punkty lojalnościowe</dt>
+                                    <dd class="col-sm-8">{{ $rvUser->loyaltyPoints->points ?? 0 }}</dd>
 
-        <div class="card">
-            <div class="card-header" style="padding: 20px;">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
-                    <div class="flex-grow-1 mb-3 mb-md-0">
-                        <h1>{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h1>
-                        <p><strong>Email:</strong> {{ Auth::user()->email }}</p>
-                        <p><strong>Adres:</strong> {{ Auth::user()->address }}</p>
-                        @if (Auth::user()->role_id != 1)
-                        <p><strong>Punkty lojalnościowe:</strong> {{ Auth::user()->loyaltyPoints->points ?? 0 }}</p>
-                        <p><strong>Kod polecający:</strong> {{ $referralCode }}</p>
-                        @endif
-                        <div>
-                            <a href="{{ route('settings') }}" class="btn custom-btn btn-test">Edytuj dane</a>
-                            @if (Auth::user()->role_id != 1)
-                            <a href="{{ route('cart.show') }}" class="btn custom-btn btn-test">Koszyk</a>
-                            @endif
-                            <a href="{{ route('logout') }}" class="btn custom-btn btn-test">Wyloguj</a>
+                                    <dt class="col-sm-4">Kod polecający</dt>
+                                    <dd class="col-sm-8"><code>{{ $referralCode }}</code></dd>
+                                @endif
+                            </dl>
+
+                            <div class="rv-cluster">
+                                <a href="{{ route('settings') }}" class="btn custom-btn">Edytuj dane</a>
+                                @if ($rvUser->role_id != 1)
+                                    <a href="{{ route('cart.show') }}" class="btn btn-secondary">Koszyk</a>
+                                @endif
+                                <a href="{{ route('logout') }}" class="btn btn-secondary">Wyloguj się</a>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4 text-center">
+                            <img src="{{ url($rvUser->avatar ?: 'storage/img/user.png') }}"
+                                 class="rounded-circle"
+                                 width="120" height="120"
+                                 style="object-fit: cover;"
+                                 alt="Awatar użytkownika {{ $rvUser->first_name }} {{ $rvUser->last_name }}"
+                                 loading="lazy">
+
+                            <form method="POST" action="{{ route('user.update_avatar') }}"
+                                  enctype="multipart/form-data" class="rv-stack mt-4" id="avatarForm">
+                                @csrf
+                                @method('PUT')
+
+                                <div class="text-start">
+                                    <label for="avatar" class="form-label">Zmień awatar</label>
+                                    <input id="avatar" name="avatar" type="file" accept="image/*"
+                                           class="form-control @error('avatar') is-invalid @enderror" required
+                                           aria-describedby="@error('avatar') avatar-error @enderror">
+                                    @include('layouts.field-error', ['field' => 'avatar'])
+                                </div>
+
+                                <button type="submit" class="btn custom-btn">Zaktualizuj awatar</button>
+                            </form>
                         </div>
                     </div>
-                    <div class="photo text-center">
-                        <img src="{{ url(Auth::user() ? Auth::user()->avatar : 'storage/img/user.png') }}" class="rounded-circle" height="100" alt="Portrait of a User" loading="lazy" />
-                        <form method="POST" action="{{ route('user.update_avatar') }}" enctype="multipart/form-data" class="needs-validation mt-3" novalidate>
+                </div>
+            </section>
+
+            @if ($rvUser->role_id != 1)
+                {{-- Friends --}}
+                <section class="card mb-5" aria-labelledby="add-friend-heading">
+                    <div class="card-body" style="padding: var(--rv-space-5);">
+                        <h2 id="add-friend-heading">Dodaj znajomego</h2>
+
+                        <form method="POST" action="{{ route('friends.sendRequest') }}" class="rv-stack mt-3">
                             @csrf
-                            @method('PUT')
-                            <div class="form-group mb-3">
-                                <label for="avatar" class="form-label">Zmień awatar</label>
-                                <input id="avatar" name="avatar" type="file" class="form-control" required>
+                            <div>
+                                <label for="email" class="form-label">E-mail znajomego</label>
+                                <input type="email" id="email" name="email"
+                                       class="form-control @error('email') is-invalid @enderror"
+                                       placeholder="Wpisz e-mail znajomego" required
+                                       autocomplete="off"
+                                       role="combobox" aria-expanded="false"
+                                       aria-autocomplete="list" aria-controls="emailList"
+                                       aria-describedby="email-hint @error('email') email-error @enderror">
+                                <span class="rv-field-hint" id="email-hint">
+                                    Po wpisaniu trzech znaków zobaczysz podpowiedzi.
+                                </span>
+                                @include('layouts.field-error', ['field' => 'email'])
+
+                                <div id="emailList" role="listbox" aria-label="Podpowiedzi adresów e-mail"></div>
+                                <p class="visually-hidden" id="emailListStatus" aria-live="polite"></p>
                             </div>
-                            <div class="text-center mb-3">
-                                <button type="submit" class="btn custom-btn">Zaktualizuj awatar</button>
-                            </div>
+
+                            <button type="submit" class="btn custom-btn align-self-start">Wyślij zaproszenie</button>
                         </form>
                     </div>
-                </div>
-            </div>
-        </div>
+                </section>
 
-        @if (Auth::user()->role_id != 1)
-        <div class="card mt-5">
-            <div class="card-header">
-                <h3>Dodaj znajomego</h3>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{{ route('friends.sendRequest') }}">
-                    @csrf
-                    <div class="form-group">
-                        <label for="email" class="form-label">Email znajomego</label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="Wpisz email znajomego" required>
-                        <div id="emailList"></div>
-                    </div>
-                    <button type="submit" class="btn custom-btn mt-3">Wyślij zaproszenie</button>
-                </form>
-            </div>
-        </div>
+                <div class="row g-5 mb-5">
+                    <div class="col-lg-4">
+                        <section class="card h-100" aria-labelledby="requests-heading">
+                            <div class="card-body">
+                                <h2 id="requests-heading" style="font-size: var(--rv-text-xl);">Zaproszenia do znajomych</h2>
 
-        <div class="card mt-5">
-            <div class="card-header">
-                <h3>Zaproszenia do znajomych</h3>
-            </div>
-            <div class="card-body">
-                @if($friendRequests->isEmpty())
-                <div class="alert alert-info" role="alert">
-                    Brak zaproszeń do znajomych.
-                </div>
-                @else
-                <div class="table-responsive">
-                    <table class="table table-bordered text-white">
-                        <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($friendRequests as $request)
-                            <tr>
-                                <td>{{ $request->user->email }}</td>
-                                <td>
-                                    <form action="{{ route('friends.acceptRequest', $request->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        <button type="submit" class="btn btn-success btn-sm">Akceptuj</button>
-                                    </form>
-                                    <form action="{{ route('friends.declineRequest', $request->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        <button type="submit" class="btn btn-danger btn-sm">Odrzuć</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                @endif
-            </div>
-        </div>
-
-        <div class="card mt-5">
-            <div class="card-header">
-                <h3>Oczekujące zaproszenia</h3>
-            </div>
-            <div class="card-body">
-                @if($pendingRequests->isEmpty())
-                <div class="alert alert-info" role="alert">
-                    Brak oczekujących zaproszeń.
-                </div>
-                @else
-                <div class="table-responsive">
-                    <table class="table table-bordered text-white">
-                        <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($pendingRequests as $request)
-                            <tr>
-                                <td>{{ $request->friend->email }}</td>
-                                <td>Oczekuje na akceptację</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                @endif
-            </div>
-        </div>
-        <div class="card mt-5">
-            <div class="card-header">
-                <h3>Twoi znajomi</h3>
-            </div>
-            <div class="card-body">
-                @if($friends->isEmpty())
-                <div class="alert alert-info" role="alert">
-                    Brak znajomych.
-                </div>
-                @else
-                <div class="table-responsive">
-                    <table class="table table-bordered text-white">
-                        <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($friends as $friend)
-                            <tr>
-                                <td>{{ $friend->email }}</td>
-                                <td>
-                                    <form action="{{ route('friends.removeFriend', $friend->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Usuń znajomego</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                @endif
-            </div>
-        </div>
-
-        <h3 style="margin-top:20px;">Wydatki w poszczególnych dniach:</h3>
-        <div class="chart-container" style="position: relative; height:40vh; width:80vw; margin-bottom: 20px;">
-            <canvas id="expensesChart"></canvas>
-        </div>
-        <div class="d-flex justify-content-between mb-4">
-            <button id="prevWeek" class="btn custom-btn">Poprzedni tydzień</button>
-            <button id="nextWeek" class="btn custom-btn">Następny tydzień</button>
-        </div>
-
-        <h3 style="margin-top:20px;">Aktualne wypożyczenia:</h3>
-        @if($loans->isEmpty())
-        <div class="alert alert-danger" role="alert">
-            BRAK WYPOŻYCZONYCH FILMÓW
-        </div>
-        @else
-        <div class="table-responsive">
-            <table class="table table-bordered text-white">
-                <thead>
-                    <tr>
-                        <th>Film</th>
-                        <th>Data rozpoczęcia</th>
-                        <th>Data zakończenia</th>
-                        <th>Cena całkowita</th>
-                        <th>Status</th>
-                        <th>Akcje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($loans as $loan)
-                    @foreach ($loan->movies as $movie)
-                    <tr>
-                        <td>
-                            @php
-                            $premiumMovie = \App\Models\PremiumMovie::where('movie_id', $movie->id)
-                            ->where('user_id', auth()->id())
-                            ->first();
-                            @endphp
-                            @if ($loan->status !== 'zwrócone')
-                            @if ($premiumMovie)
-                            <a href="{{ route('loans.premium', $movie->id) }}">{{ $movie->title }}</a>
-                            @else
-                            <a href="{{ route('loans.show', $movie->id) }}">{{ $movie->title }}</a>
-                            @endif
-                            @else
-                            <span class="disabled-link">{{ $movie->title }}</span>
-                            @endif
-                        </td>
-                        <td>{{ $loan->start }}</td>
-                        <td>{{ $loan->end }}</td>
-                        <td>{{ number_format($loan->price, 2) }} zł</td>
-                        <td>{{ $loan->status }}</td>
-                        <td>
-                            @php
-                                $existingOpinion = \App\Models\Opinion::where('movie_id', $movie->id)
-                                ->where('user_id', auth()->id())
-                                ->first();
-                            @endphp
-                            @if ($existingOpinion)
-                            <p>Już dodałeś opinię dla tego filmu.</p>
-                            @else
-                            <div>
-                                <button onclick="toggleReviewForm({{ $loan->id }})" class="btn btn-info btn-sm" style="margin-bottom: 10px;">Dodaj opinię</button>
-                            </div>
-                            <div id="review-form-{{ $loan->id }}" style="display:none;">
-                                <form action="{{ route('opinions.store') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="movie_id" value="{{ $movie->id }}">
-                                    <textarea name="content" placeholder="Wpisz swoją opinię" required></textarea>
-                                    <button type="submit" class="btn btn-primary btn-sm">Wyślij</button>
-                                </form>
-                            </div>
-                            @endif                                         
-                            @if ($premiumMovie)
-                            <p>Jakość premium odblokowana.</p>
-                            @elseif ($loan->status !== 'zwrócone')
-                            <div>
-                                <button onclick="togglePaymentForm({{ $loan->id }})" class="btn btn-warning btn-sm" style="margin-top:10px;">Kup jakość premium</button>
-                            </div>
-                            @if (Auth::user()->loyaltyPoints->points >= 50)
-                            <div>
-                                <form method="POST" action="{{ route('user.upgradeToPremium', $movie->id) }}" id="points-form-{{ $loan->id }}">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success btn-sm" style="margin-top:10px;">Kup jakość premium za punkty</button>
-                                </form>
-                                @endif
-                            </div>
-                            <form method="POST" action="{{ route('user.upgradeToPremium', $movie->id) }}" id="payment-form-{{ $loan->id }}" style="display:none;">
-                                @csrf
-                                <div class="card mt-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Dane karty kredytowej</h5>
-                                        <div class="mb-3">
-                                            <label for="cardNumber" class="form-label">Numer karty</label>
-                                            <input type="text" id="cardNumber-{{ $loan->id }}" name="cardNumber" class="form-control" pattern="\d{16}" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="expiryDate" class="form-label">Data ważności</label>
-                                            <input type="month" id="expiryDate-{{ $loan->id }}" name="expiryDate" class="form-control" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="cvv" class="form-label">CVV</label>
-                                            <input type="text" id="cvv-{{ $loan->id }}" name="cvv" class="form-control" pattern="\d{3}" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary btn-sm">Zapłać</button>
-                                    </div>
-                                </div>
-                            </form>
-                            @endif
-
-                            <button onclick="toggleRecommendationForm({{ $loan->id }})" style="margin-top: 20px;" class="btn btn-success btn-sm">Poleć film</button>
-                            <div id="recommendation-form-{{ $loan->id }}" style="display:none;">
-                                @if($friends->isEmpty())
-                                <div class="alert alert-info mt-2" role="alert">
-                                    Nie masz znajomych, którym możesz polecić film.
-                                </div>
+                                @if ($friendRequests->isEmpty())
+                                    <p class="rv-text-muted">Brak zaproszeń do znajomych.</p>
                                 @else
-                                <form action="{{ route('movies.recommend', $movie->id) }}" method="POST">
-                                    @csrf
-                                    <div class="form-group">
-                                        <label for="friend_id" class="form-label">Wybierz znajomego</label>
-                                        <select name="friend_id" id="friend_id" class="form-control" required>
-                                            @foreach($friends as $friend)
-                                            <option value="{{ $friend->id }}">{{ $friend->email }}</option>
-                                            @endforeach
-                                        </select>
+                                    <div class="table-responsive" tabindex="0">
+                                        <table class="table">
+                                            <caption>Otrzymane zaproszenia oczekujące na Twoją decyzję.</caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">E-mail</th>
+                                                    <th scope="col">Akcje</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($friendRequests as $request)
+                                                    <tr>
+                                                        <th scope="row" style="font-weight: var(--rv-weight-normal);">
+                                                            {{ $request->user->email }}
+                                                        </th>
+                                                        <td>
+                                                            <div class="rv-cluster">
+                                                                <form action="{{ route('friends.acceptRequest', $request->id) }}" method="POST">
+                                                                    @csrf
+                                                                    <button type="submit" class="btn btn-success btn-sm">
+                                                                        Akceptuj<span class="visually-hidden"> zaproszenie od {{ $request->user->email }}</span>
+                                                                    </button>
+                                                                </form>
+                                                                <form action="{{ route('friends.declineRequest', $request->id) }}" method="POST">
+                                                                    @csrf
+                                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                                        Odrzuć<span class="visually-hidden"> zaproszenie od {{ $request->user->email }}</span>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-sm">Poleć</button>
-                                </form>
                                 @endif
                             </div>
+                        </section>
+                    </div>
 
-                        </td>
-                    </tr>
-                    @endforeach
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        <div class="row">
-            <div class="col-12 d-flex justify-content-center">
-                {{ $loans->links('pagination::bootstrap-4') }}
-            </div>
-        </div>
-        @endif
+                    <div class="col-lg-4">
+                        <section class="card h-100" aria-labelledby="pending-heading">
+                            <div class="card-body">
+                                <h2 id="pending-heading" style="font-size: var(--rv-text-xl);">Oczekujące zaproszenia</h2>
 
-        <div class="card mt-5">
-            <div class="card-header">
-                <h3>Polecone filmy</h3>
-            </div>
-            <div class="card-body" style="margin-bottom: 10px;">
-                @if($recommendations->isEmpty())
-                <div class="alert alert-info" role="alert">
-                    Brak poleconych filmów.
+                                @if ($pendingRequests->isEmpty())
+                                    <p class="rv-text-muted">Brak oczekujących zaproszeń.</p>
+                                @else
+                                    <div class="table-responsive" tabindex="0">
+                                        <table class="table">
+                                            <caption>Zaproszenia wysłane przez Ciebie.</caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">E-mail</th>
+                                                    <th scope="col">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($pendingRequests as $request)
+                                                    <tr>
+                                                        <th scope="row" style="font-weight: var(--rv-weight-normal);">
+                                                            {{ $request->friend->email }}
+                                                        </th>
+                                                        <td>Oczekuje na akceptację</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endif
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <section class="card h-100" aria-labelledby="friends-heading">
+                            <div class="card-body">
+                                <h2 id="friends-heading" style="font-size: var(--rv-text-xl);">Twoi znajomi</h2>
+
+                                @if ($friends->isEmpty())
+                                    <p class="rv-text-muted">Nie masz jeszcze znajomych.</p>
+                                @else
+                                    <div class="table-responsive" tabindex="0">
+                                        <table class="table">
+                                            <caption>Lista Twoich znajomych.</caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">E-mail</th>
+                                                    <th scope="col">Akcje</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($friends as $friend)
+                                                    <tr>
+                                                        <th scope="row" style="font-weight: var(--rv-weight-normal);">
+                                                            {{ $friend->email }}
+                                                        </th>
+                                                        <td>
+                                                            <form action="{{ route('friends.removeFriend', $friend->id) }}" method="POST">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                                    Usuń<span class="visually-hidden"> znajomego {{ $friend->email }}</span>
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endif
+                            </div>
+                        </section>
+                    </div>
                 </div>
-                @else
-                <div class="table-responsive">
-                    <table class="table table-bordered text-white">
-                        <thead>
-                            <tr>
-                                <th>Zdjęcie</th>
-                                <th>Film</th>
-                                <th>Polecający</th>
-                                <th>Status</th>
-                                <th>Akcje</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($recommendations as $recommendation)
-                            <tr>
-                                <td>
-                                    <img src="{{ 'storage/'.$recommendation->movie->img_path }}" alt="{{ $recommendation->movie->title }}" style="width: 100px; height: auto;">
-                                </td>
-                                <td>{{ $recommendation->movie->title }}</td>
-                                <td>{{ $recommendation->user->email }}</td>
-                                <td>{{ $recommendation->status }}</td>
-                                <td>
-                                    <a href="{{ route('movies.show', $recommendation->movie->id) }}" class="btn btn-primary btn-sm">Zobacz film</a>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                @endif
-            </div>
-        </div>
-        <br>
-        <br>
-        @endif
 
-    </div>
-    @else
-    <div class="full-height">
-        <p class="text-large">Proszę się zalogować, aby uzyskać dostęp do profilu.</p>
-        <div class="text-center">
-            <a href="{{ route('login') }}" class="btn custom-btn">Zaloguj się</a>
-        </div>
-    </div>
-    @endif
+                {{-- Expenses chart --}}
+                <section class="card mb-5" aria-labelledby="expenses-heading">
+                    <div class="card-body" style="padding: var(--rv-space-5);">
+                        <h2 id="expenses-heading">Wydatki w poszczególnych dniach</h2>
+
+                        <div class="chart-container" style="position: relative; height: 40vh; min-height: 260px;">
+                            <canvas id="expensesChart"
+                                    role="img"
+                                    aria-label="Wykres słupkowy wydatków w wybranym tygodniu. Dokładne wartości są dostępne w tabeli wypożyczeń poniżej."></canvas>
+                        </div>
+
+                        <p class="visually-hidden" id="expensesStatus" aria-live="polite"></p>
+
+                        <div class="rv-cluster justify-content-between mt-4">
+                            <button id="prevWeek" type="button" class="btn custom-btn">Poprzedni tydzień</button>
+                            <button id="nextWeek" type="button" class="btn custom-btn">Następny tydzień</button>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Current loans --}}
+                <section class="rv-section" aria-labelledby="loans-heading">
+                    <div class="rv-section-title">
+                        <h2 id="loans-heading">Aktualne wypożyczenia</h2>
+                    </div>
+
+                    @if ($loans->isEmpty())
+                        <div class="rv-empty">
+                            <h3>Brak wypożyczonych filmów</h3>
+                            <p>Nie masz jeszcze żadnego wypożyczenia. Przejrzyj katalog i wybierz pierwszy film.</p>
+                            <a href="{{ route('movies.index') }}" class="btn custom-btn">Przeglądaj filmy</a>
+                        </div>
+                    @else
+                        <div class="table-responsive" tabindex="0">
+                            <table class="table">
+                                <caption>Twoje wypożyczenia wraz z okresem, kosztem i dostępnymi akcjami.</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Film</th>
+                                        <th scope="col">Data rozpoczęcia</th>
+                                        <th scope="col">Data zakończenia</th>
+                                        <th scope="col">Cena całkowita</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Akcje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($loans as $loan)
+                                        @foreach ($loan->movies as $movie)
+                                            @php
+                                                $premiumMovie = \App\Models\PremiumMovie::where('movie_id', $movie->id)
+                                                    ->where('user_id', auth()->id())
+                                                    ->first();
+                                                $existingOpinion = \App\Models\Opinion::where('movie_id', $movie->id)
+                                                    ->where('user_id', auth()->id())
+                                                    ->first();
+                                            @endphp
+                                            <tr>
+                                                <th scope="row" style="font-weight: var(--rv-weight-semibold);">
+                                                    @if ($loan->status !== 'zwrócone')
+                                                        @if ($premiumMovie)
+                                                            <a href="{{ route('loans.premium', $movie->id) }}">{{ $movie->title }}</a>
+                                                        @else
+                                                            <a href="{{ route('loans.show', $movie->id) }}">{{ $movie->title }}</a>
+                                                        @endif
+                                                    @else
+                                                        <span class="disabled-link">{{ $movie->title }}</span>
+                                                    @endif
+                                                </th>
+                                                <td>
+                                                    <time datetime="{{ \Carbon\Carbon::parse($loan->start)->toDateString() }}">
+                                                        {{ \Carbon\Carbon::parse($loan->start)->format('d.m.Y') }}
+                                                    </time>
+                                                </td>
+                                                <td>
+                                                    <time datetime="{{ \Carbon\Carbon::parse($loan->end)->toDateString() }}">
+                                                        {{ \Carbon\Carbon::parse($loan->end)->format('d.m.Y') }}
+                                                    </time>
+                                                </td>
+                                                <td>{{ number_format($loan->price, 2) }} zł</td>
+                                                <td>{{ $loan->status }}</td>
+                                                <td>
+                                                    <div class="rv-stack" style="gap: var(--rv-space-2);">
+                                                        {{-- Opinion --}}
+                                                        @if ($existingOpinion)
+                                                            <p class="rv-text-muted rv-text-sm mb-0">Dodałeś już opinię dla tego filmu.</p>
+                                                        @else
+                                                            <button type="button" class="btn btn-info btn-sm"
+                                                                    aria-expanded="false" aria-controls="review-form-{{ $loan->id }}"
+                                                                    onclick="toggleReviewForm({{ $loan->id }}, this)">
+                                                                Dodaj opinię<span class="visually-hidden"> o filmie {{ $movie->title }}</span>
+                                                            </button>
+
+                                                            <div id="review-form-{{ $loan->id }}" hidden>
+                                                                <form action="{{ route('opinions.store') }}" method="POST" class="rv-stack" style="gap: var(--rv-space-2);">
+                                                                    @csrf
+                                                                    <input type="hidden" name="movie_id" value="{{ $movie->id }}">
+                                                                    <label for="opinion-{{ $loan->id }}" class="form-label">
+                                                                        Twoja opinia o filmie {{ $movie->title }}
+                                                                    </label>
+                                                                    <textarea id="opinion-{{ $loan->id }}" name="content" rows="3"
+                                                                              class="form-control" placeholder="Wpisz swoją opinię" required></textarea>
+                                                                    <button type="submit" class="btn btn-primary btn-sm">Wyślij opinię</button>
+                                                                </form>
+                                                            </div>
+                                                        @endif
+
+                                                        {{-- Premium --}}
+                                                        @if ($premiumMovie)
+                                                            <p class="rv-text-muted rv-text-sm mb-0">Jakość premium odblokowana.</p>
+                                                        @elseif ($loan->status !== 'zwrócone')
+                                                            <button type="button" class="btn btn-warning btn-sm"
+                                                                    aria-expanded="false" aria-controls="payment-form-{{ $loan->id }}"
+                                                                    onclick="togglePaymentForm({{ $loan->id }}, this)">
+                                                                Kup jakość premium<span class="visually-hidden"> dla filmu {{ $movie->title }}</span>
+                                                            </button>
+
+                                                            @if (($rvUser->loyaltyPoints->points ?? 0) >= 50)
+                                                                <form method="POST" action="{{ route('user.upgradeToPremium', $movie->id) }}"
+                                                                      id="points-form-{{ $loan->id }}">
+                                                                    @csrf
+                                                                    <button type="submit" class="btn btn-success btn-sm w-100">
+                                                                        Kup premium za punkty<span class="visually-hidden"> dla filmu {{ $movie->title }}</span>
+                                                                    </button>
+                                                                </form>
+                                                            @endif
+
+                                                            <form method="POST" action="{{ route('user.upgradeToPremium', $movie->id) }}"
+                                                                  id="payment-form-{{ $loan->id }}" hidden>
+                                                                @csrf
+                                                                <fieldset>
+                                                                    <legend style="font-size: var(--rv-text-base);">
+                                                                        Dane karty kredytowej
+                                                                    </legend>
+
+                                                                    <div class="rv-stack" style="gap: var(--rv-space-3);">
+                                                                        <div>
+                                                                            <label for="cardNumber-{{ $loan->id }}" class="form-label">Numer karty</label>
+                                                                            <input type="text" id="cardNumber-{{ $loan->id }}" name="cardNumber"
+                                                                                   class="form-control" pattern="\d{16}" inputmode="numeric"
+                                                                                   autocomplete="cc-number" required
+                                                                                   aria-describedby="cardNumber-hint-{{ $loan->id }}">
+                                                                            <span class="rv-field-hint" id="cardNumber-hint-{{ $loan->id }}">16 cyfr, bez spacji.</span>
+                                                                        </div>
+
+                                                                        <div>
+                                                                            <label for="expiryDate-{{ $loan->id }}" class="form-label">Data ważności</label>
+                                                                            <input type="month" id="expiryDate-{{ $loan->id }}" name="expiryDate"
+                                                                                   class="form-control" autocomplete="cc-exp" required>
+                                                                        </div>
+
+                                                                        <div>
+                                                                            <label for="cvv-{{ $loan->id }}" class="form-label">Kod CVV</label>
+                                                                            <input type="text" id="cvv-{{ $loan->id }}" name="cvv"
+                                                                                   class="form-control" pattern="\d{3}" inputmode="numeric"
+                                                                                   autocomplete="cc-csc" required
+                                                                                   aria-describedby="cvv-hint-{{ $loan->id }}">
+                                                                            <span class="rv-field-hint" id="cvv-hint-{{ $loan->id }}">3 cyfry z tyłu karty.</span>
+                                                                        </div>
+
+                                                                        <button type="submit" class="btn btn-primary btn-sm">Zapłać</button>
+                                                                    </div>
+                                                                </fieldset>
+                                                            </form>
+                                                        @endif
+
+                                                        {{-- Recommend --}}
+                                                        <button type="button" class="btn btn-success btn-sm"
+                                                                aria-expanded="false" aria-controls="recommendation-form-{{ $loan->id }}"
+                                                                onclick="toggleRecommendationForm({{ $loan->id }}, this)">
+                                                            Poleć film<span class="visually-hidden"> {{ $movie->title }} znajomemu</span>
+                                                        </button>
+
+                                                        <div id="recommendation-form-{{ $loan->id }}" hidden>
+                                                            @if ($friends->isEmpty())
+                                                                <p class="rv-text-muted rv-text-sm mb-0">
+                                                                    Nie masz znajomych, którym możesz polecić film.
+                                                                </p>
+                                                            @else
+                                                                <form action="{{ route('movies.recommend', $movie->id) }}" method="POST"
+                                                                      class="rv-stack" style="gap: var(--rv-space-2);">
+                                                                    @csrf
+                                                                    <label for="friend_id-{{ $loan->id }}" class="form-label">Wybierz znajomego</label>
+                                                                    <select name="friend_id" id="friend_id-{{ $loan->id }}" class="form-select" required>
+                                                                        @foreach ($friends as $friend)
+                                                                            <option value="{{ $friend->id }}">{{ $friend->email }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    <button type="submit" class="btn btn-primary btn-sm">Poleć</button>
+                                                                </form>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if ($loans->hasPages())
+                            <nav class="mt-4 d-flex justify-content-center" aria-label="Paginacja listy wypożyczeń">
+                                {{ $loans->onEachSide(1)->links('vendor.pagination.rentalvod') }}
+                            </nav>
+                        @endif
+                    @endif
+                </section>
+
+                {{-- Recommendations --}}
+                <section class="rv-section" aria-labelledby="recommendations-heading">
+                    <div class="rv-section-title">
+                        <h2 id="recommendations-heading">Polecone filmy</h2>
+                    </div>
+
+                    @if ($recommendations->isEmpty())
+                        <div class="rv-empty">
+                            <h3>Brak poleconych filmów</h3>
+                            <p>Gdy znajomi polecą Ci film, pojawi się on w tym miejscu.</p>
+                        </div>
+                    @else
+                        <div class="table-responsive" tabindex="0">
+                            <table class="table">
+                                <caption>Filmy polecone Ci przez znajomych.</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Plakat</th>
+                                        <th scope="col">Film</th>
+                                        <th scope="col">Polecający</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Akcje</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($recommendations as $recommendation)
+                                        <tr>
+                                            <td>
+                                                <img src="{{ asset('storage/' . $recommendation->movie->img_path) }}"
+                                                     alt="Plakat filmu {{ $recommendation->movie->title }}"
+                                                     width="60" height="90"
+                                                     style="object-fit: cover; border-radius: var(--rv-radius-sm);"
+                                                     loading="lazy">
+                                            </td>
+                                            <th scope="row" style="font-weight: var(--rv-weight-semibold);">
+                                                {{ $recommendation->movie->title }}
+                                            </th>
+                                            <td>{{ $recommendation->user->email }}</td>
+                                            <td>{{ $recommendation->status }}</td>
+                                            <td>
+                                                <a href="{{ route('movies.show', $recommendation->movie->id) }}" class="btn btn-primary btn-sm">
+                                                    Zobacz film<span class="visually-hidden"> {{ $recommendation->movie->title }}</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </section>
+            @endif
+        @else
+            <div class="rv-empty">
+                <h1>Zaloguj się, aby zobaczyć profil</h1>
+                <p>Profil jest dostępny tylko dla zalogowanych użytkowników.</p>
+                <a href="{{ route('login') }}" class="btn custom-btn">Zaloguj się</a>
+            </div>
+        @endif
+    </main>
 
     @include('layouts.footer', ['fixedBottom' => false])
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        function toggleRecommendationForm(loanId) {
-            var form = document.getElementById('recommendation-form-' + loanId);
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
 
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('expensesChart').getContext('2d');
-            const expensesData = @json($expensesData);
-
-            let currentWeekIndex = 0;
-            const weeks = chunkArray(expensesData, 7);
-
-            function updateChart(weekIndex) {
-                const weekData = weeks[weekIndex] || [];
-                const labels = weekData.map(day => day.date);
-                const data = weekData.map(day => day.amount);
-
-                chart.data.labels = labels;
-                chart.data.datasets[0].data = data;
-                chart.update();
-
-                document.getElementById('prevWeek').style.display = weekIndex > 0 ? 'block' : 'none';
-                document.getElementById('nextWeek').style.display = weekIndex < weeks.length - 1 ? 'block' : 'none';
-            }
-
-            const chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Wydatki (zł)',
-                        data: [],
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            document.getElementById('prevWeek').addEventListener('click', function() {
-                if (currentWeekIndex > 0) {
-                    currentWeekIndex--;
-                    updateChart(currentWeekIndex);
-                }
-            });
-
-            document.getElementById('nextWeek').addEventListener('click', function() {
-                if (currentWeekIndex < weeks.length - 1) {
-                    currentWeekIndex++;
-                    updateChart(currentWeekIndex);
-                }
-            });
-
-            function chunkArray(array, size) {
-                const result = [];
-                for (let i = 0; i < array.length; i += size) {
-                    result.push(array.slice(i, i + size));
-                }
-                return result;
-            }
-
-            updateChart(currentWeekIndex);
-        });
-
-    </script>
-    <script>
-        function toggleReviewForm(loanId) {
-            var form = document.getElementById('review-form-' + loanId);
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function togglePaymentForm(loanId) {
-            var form = document.getElementById('payment-form-' + loanId);
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const forms = document.querySelectorAll('[id^="payment-form-"]');
-            forms.forEach(function(form) {
-                form.addEventListener('submit', function(event) {
-                    const expiryDateInput = form.querySelector('[name="expiryDate"]');
-                    const expiryDateValue = expiryDateInput.value;
-                    const currentDate = new Date();
-                    const expiryDate = new Date(expiryDateValue + '-01');
-
-                    if (expiryDate < currentDate) {
-                        event.preventDefault();
-                        alert('Data ważności karty nie może być z przeszłości.');
-                    }
-                });
-
-                const expiryDateInput = form.querySelector('[name="expiryDate"]');
-                const currentDate = new Date();
-                const currentYear = currentDate.getFullYear();
-                const currentMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
-                const minExpiryDate = `${currentYear}-${currentMonth}`;
-                expiryDateInput.min = minExpiryDate;
-            });
-
-            const avatarForm = document.querySelector('.needs-validation');
-            avatarForm.addEventListener('submit', function(event) {
-                const fileInput = document.getElementById('avatar');
-                let valid = true;
-
-                if (fileInput.files.length === 0) {
-                    valid = false;
-                    fileInput.classList.add('is-invalid');
-                } else {
-                    fileInput.classList.remove('is-invalid');
-                }
-
-                if (!valid) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-            });
-        });
-
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const emailInput = document.getElementById('email');
-            const emailList = document.getElementById('emailList');
-
-            emailInput.addEventListener('input', function() {
-                const query = emailInput.value;
-
-                if (query.length >= 3) {
-                    fetch(`/search-users?q=${query}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            emailList.innerHTML = '';
-
-                            data.forEach(user => {
-                                const option = document.createElement('div');
-                                option.classList.add('suggestion');
-                                option.innerText = user.email;
-                                option.addEventListener('click', () => {
-                                    emailInput.value = user.email;
-                                    emailList.innerHTML = '';
-                                });
-
-                                emailList.appendChild(option);
-                            });
-                        });
-                } else {
-                    emailList.innerHTML = '';
-                }
-            });
-        });
-
-    </script>
-    <script>
-        function showSnackbar(message) {
-            var snackbar = document.getElementById("snackbar");
-            snackbar.innerHTML = message;
-            snackbar.className = "show";
-            setTimeout(function() {
-                snackbar.className = snackbar.className.replace("show", "");
-            }, 8000);
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            @if(session('points_message'))
-            showSnackbar("{{ session('points_message') }}");
-            @endif
-        });
-
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('form[action="{{ route('opinions.store') }}"]').forEach(function(form) {
-                form.addEventListener('submit', function(event) {
-                    const movieIdInput = form.querySelector('input[name="movie_id"]');
-                    const movieIdValue = movieIdInput.value;
-
-                    fetch('/api/check-movie/' + movieIdValue)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (!data.exists) {
-                                event.preventDefault();
-                                alert('Podany film nie istnieje.');
-                            }
-                        })
-                });
-            });
-        });
-
-    </script>
-
+    @auth
+        @if (Auth::user()->role_id != 1)
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                // Server-supplied data for profile.js.
+                window.rvProfileData = {
+                    expenses: @json($expensesData),
+                    searchUsersUrl: @json(url('/search-users')),
+                    pointsMessage: @json(session('points_message')),
+                };
+            </script>
+            <script defer src="{{ asset('js/profile.js') }}"></script>
+        @endif
+    @endauth
 </body>
 
 </html>

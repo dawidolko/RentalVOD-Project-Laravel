@@ -1,37 +1,62 @@
-<footer class="container-fluid bg-body-tertiary {{ $fixedBottom ?? 'fixed-bottom' }}">
-    <div class="row text-center pt-2 pb-2">
-        <div class="col-md-4 mb-2">
-            <p>&copy; {{ __('name_page') }} &ndash; 2024</p>
-        </div>
-        <div class="col-md-4 mb-2" style="display: flex;">
-            <a href="https://facebook.com" target="_blank" class="text-decoration-none red-after">
-                <i class="bi bi-facebook" style="font-size: 24px;"></i>
-            </a>
-            <a href="https://twitter.com" target="_blank" class="text-decoration-none ms-3 red-after">
-                <i class="bi bi-twitter" style="font-size: 24px;"></i>
-            </a>
-            <a href="https://instagram.com" target="_blank" class="text-decoration-none ms-3 red-after">
-                <i class="bi bi-instagram" style="font-size: 24px;"></i>
-            </a>
-            <a href="https://linkedin.com" target="_blank" class="text-decoration-none ms-3 red-after">
-                <i class="bi bi-linkedin" style="font-size: 24px;"></i>
-            </a>
-        </div>
-        <div class="col-md-4 mb-2">
-            <a href="mailto:rentalVOD@contact.com">
-                <i class="bi bi-envelope-fill red-after" style="font-size: 20px;"></i> rentalVOD@contact.com
-            </a>
+<footer class="{{ isset($fixedBottom) && $fixedBottom ? 'fixed-bottom' : '' }}">
+    <div class="rv-page" style="padding-block: 0;">
+        <div class="row align-items-center g-3">
+            <div class="col-md-4 text-center text-md-start">
+                <p>&copy; {{ __('name_page') }} &ndash; <time datetime="2024">2024</time></p>
+            </div>
+
+            <div class="col-md-4">
+                <nav aria-label="Media społecznościowe">
+                    <ul class="rv-footer-social list-unstyled mb-0">
+                        <li>
+                            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-facebook" aria-hidden="true"></i>
+                                <span class="visually-hidden">Facebook (otwiera się w nowej karcie)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-twitter" aria-hidden="true"></i>
+                                <span class="visually-hidden">Twitter (otwiera się w nowej karcie)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-instagram" aria-hidden="true"></i>
+                                <span class="visually-hidden">Instagram (otwiera się w nowej karcie)</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-linkedin" aria-hidden="true"></i>
+                                <span class="visually-hidden">LinkedIn (otwiera się w nowej karcie)</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="col-md-4 text-center text-md-end">
+                <a href="mailto:rentalVOD@contact.com" class="text-decoration-none">
+                    <i class="bi bi-envelope-fill" aria-hidden="true"></i>
+                    rentalVOD@contact.com
+                </a>
+                <span class="d-block mt-2">
+                    <a href="{{ route('regulamin') }}" class="text-decoration-none">Regulamin</a>
+                </span>
+            </div>
         </div>
     </div>
 </footer>
 
 <script>
-    window.onload = function(e) {
-        var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-        var toastList = toastElList.map(function(toastEl) {
-            return new bootstrap.Toast(toastEl)
+    window.addEventListener('load', function () {
+        // Bootstrap toasts are opt-in; show any that the server rendered.
+        if (typeof bootstrap === 'undefined') {
+            return;
+        }
+        document.querySelectorAll('.toast').forEach(function (toastEl) {
+            new bootstrap.Toast(toastEl).show();
         });
-        toastList.forEach(toast => toast.show());
-    }
-
+    });
 </script>

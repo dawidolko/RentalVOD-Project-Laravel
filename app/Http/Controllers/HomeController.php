@@ -52,4 +52,16 @@ class HomeController extends Controller
     {
         return view('regulamin'); 
     }
+
+    /**
+     * XML sitemap listing the publicly indexable pages and every movie.
+     */
+    public function sitemap()
+    {
+        $movies = Movie::select('id', 'updated_at')->get();
+
+        return response()
+            ->view('sitemap.index', compact('movies'))
+            ->header('Content-Type', 'application/xml');
+    }
 }

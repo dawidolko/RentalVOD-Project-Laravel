@@ -1,152 +1,222 @@
+@php
+    $rvIsAdmin = Auth::check() && Auth::user()->role_id == 1;
+
+    $rvEffectivePrice = !empty($movie->super_promo_price)
+        ? $movie->super_promo_price
+        : (($promotionsEnabled && !empty($promoPrice)) ? $promoPrice : $movie->price_day);
+
+    // Movie schema for rich results. Only include an aggregateRating when
+    // there is at least one opinion behind it.
+    $rvSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Movie',
+        'name' => $movie->title,
+        'description' => $movie->description,
+        'image' => asset('storage/' . $movie->img_path),
+        'url' => route('movies.show', ['id' => $movie->id]),
+        'genre' => $movie->category->species,
+        'director' => ['@type' => 'Person', 'name' => $movie->director],
+        'datePublished' => (string) $movie->release_year,
+        'duration' => 'PT' . (int) $movie->duration . 'M',
+        'inLanguage' => 'pl-PL',
+        'offers' => [
+            '@type' => 'Offer',
+            'price' => number_format((float) $rvEffectivePrice, 2, '.', ''),
+            'priceCurrency' => 'PLN',
+            'availability' => $movie->available === 'dostępny'
+                ? 'https://schema.org/InStock'
+                : 'https://schema.org/OutOfStock',
+            'url' => route('movies.show', ['id' => $movie->id]),
+        ],
+    ];
+
+    if ($movie->opinions->count() > 0) {
+        $rvSchema['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => (string) $movie->rate,
+            'bestRating' => '10',
+            'worstRating' => '0',
+            'ratingCount' => $movie->opinions->count(),
+        ];
+    }
+@endphp
+
 @include('layouts.html')
-@include('layouts.head', ['pageTitle' => 'RentalVOD - film ' . $movie->title])
+@include('layouts.head', [
+    'pageTitle' => $movie->title . ' - wypożycz online w RentalVOD',
+    'metaDescription' => \Illuminate\Support\Str::limit(
+        $movie->title . ' (' . $movie->release_year . '), reż. ' . $movie->director . '. ' . $movie->description,
+        155
+    ),
+    'ogImage' => asset('storage/' . $movie->img_path),
+    'ogType' => 'video.movie',
+    'canonical' => route('movies.show', ['id' => $movie->id]),
+    'jsonLd' => $rvSchema,
+])
 
 <head>
-    <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-
-    <link rel="stylesheet" href="{{ asset('css/movieStyle.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/movieStyle.css') }}">
 </head>
 
 <body>
     @include('layouts.navbar')
 
-    <div id="imageOverlay" class="image-overlay" style="display: none">
-        <span class="close-btn">&times;</span>
-        <img class="overlay-image" src="" alt="Powiększone zdjęcie" />
+    <div class="rv-page">
+        @include('layouts.breadcrumbs', ['crumbs' => [
+            ['label' => 'Filmy', 'url' => route('movies.index')],
+            ['label' => $movie->category->species, 'url' => route('movies.index', ['category' => $movie->category->id])],
+            ['label' => $movie->title],
+        ]])
     </div>
 
-    <div class="produkt new-conti category-section container">
-
+    <main id="main-content" class="rv-page" style="padding-top: 0;">
         @include('layouts.success')
-
         @include('layouts.errors')
 
-        @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </ul>
-        </div>
-        @endif
-
-        <div class="product-main">
-            <div class="product-grid">
-                <div class="showcase">
-                    <div class="slider showcase-banner">
-                        <img src="{{ asset('storage/' . $movie->img_path) }}" alt="{{ $movie->category->species }}" width="300" class="product-img hover" style="border-bottom: 1px solid var(--cultured);" />
-                        <img src="{{ asset('storage/' . $movie->img_path) }}" alt="{{ $movie->category->species }}" width="300" class="product-img default" style="border-bottom: 1px solid var(--cultured);" />
+        <article>
+            <div class="row g-5">
+                {{-- Poster --}}
+                <div class="col-lg-4">
+                    <div class="showcase-banner card" style="aspect-ratio: 2 / 3; position: relative;">
+                        <img src="{{ asset('storage/' . $movie->img_path) }}"
+                             alt="Plakat filmu {{ $movie->title }}"
+                             class="product-img default"
+                             style="width: 100%; height: 100%; object-fit: cover;"
+                             width="400" height="600">
 
                         <div class="showcase-actions">
-                            <button class="btn-action magnification">
-                                <ion-icon name="eye-outline"></ion-icon>
+                            <button type="button" class="btn-action magnification" aria-label="Powiększ plakat filmu {{ $movie->title }}">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
                             </button>
-                            @if (Auth::check())
-                            <form action="{{ route('cart.add', ['movie_id' => $movie->id]) }}" method="POST">
-                                @csrf
-                                <button class="btn-action bag-add" {{ Auth::user()->role_id == 1 ? 'disabled' : '' }}>
-                                    <ion-icon name="bag-add-outline"></ion-icon>
-                                </button>
-                            </form>
-                            @else
-                            <a href="{{ route('login') }}" class="btn-action bag-add">
-                                <ion-icon name="log-in-outline"></ion-icon>
-                            </a>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="showcase-content">
-                        <div class="caseBox-info">
-                            <div class="caseBox1">
-                                <a href="{{ route('movies.show', ['id' => $movie->id]) }}" class="showcase-category card-title text-danger2">{{ $movie->category->species }}</a>
-                                <a href="{{ route('movies.show', ['id' => $movie->id]) }}">
-                                    <h3 class="showcase-title">{{ $movie->title }}</h3>
-                                </a>
-                                <ul class="list-group list-group-flush bg-secondary" style="text-align: center;">
-                                    <li class="list-group-item bg-dark1"><strong>Gatunek:</strong> {{ $movie->category->species }}</li>
-                                    <li class="list-group-item bg-dark2"><strong>Reżyser:</strong> {{ $movie->director }}</li>
-                                    <li class="list-group-item bg-dark3"><strong>Rok premiery:</strong> {{ $movie->release_year }}</li>
-                                    <li class="list-group-item bg-dark4"><strong>Czas trwania:</strong> {{ $movie->duration }} min</li>
-                                    <li class="list-group-item bg-dark5"><strong>Ocena:</strong> {{ $movie->rate }}</li>
-                                    <li class="list-group-item bg-dark6"><strong>Cena za dzień wypożyczenia:</strong>
-                                        <div class="card-footer text-center" style="background-color: rgba(139, 0, 0, 0.8); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                                            @if(!empty($movie->super_promo_price))
-                                            <h5 class="card-title">{{ $movie->super_promo_price }} zł <del>{{ $movie->price_day }} zł</del></h5>
-                                            @elseif($promotionsEnabled && !empty($promoPrice))
-                                            <h5 class="card-title"><del>{{ $movie->price_day }} zł</del> {{ $promoPrice }} zł</h5>
-                                            @else
-                                            <h5 class="card-title">{{ $movie->price_day }} zł</h5>
-                                            @endif
-                                        </div>
-                                    </li>
-                                </ul>
-                                <hr />
-                                <h4 class="card-title" style="margin: 10px;">Opis</h4>
-                                <div class="product-description">{{ $movie->description }}</div>
-                                <hr />
-                                <div class="cart-favorite">
-                                    <div class="icons">
-                                        <button class="btn-action heart favoriting" data-movie-id="{{ $movie->id }}" onclick="toggleFavorite('{{ $movie->id }}')">
-                                            <ion-icon name="heart-outline" id="favorite-icon-{{ $movie->id }}"></ion-icon>
-                                        </button>
-                                        @if (Auth::check())
-                                        <form action="{{ route('cart.add', ['movie_id' => $movie->id]) }}" method="POST">
-                                            @csrf
-                                            <button class="btn-action bag-add carting" {{ Auth::user()->role_id == 1 ? 'disabled' : '' }}>
-                                                <ion-icon name="bag-add-outline"></ion-icon>
-                                            </button>
-                                        </form>
-                                        @else
-                                        <a href="{{ route('login') }}" class="btn-action bag-add">
-                                            <ion-icon name="log-in-outline"></ion-icon>
-                                        </a>
-                                        @endif
-                                    </div>
-                                    <div class="login-btn">
-                                        @if (Auth::check())
-                                        <form action="{{ route('cart.add', ['movie_id' => $movie->id]) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="btn btn-block custom-btn" {{ Auth::user()->role_id == 1 ? 'disabled' : '' }}>
-                                                <b>Dodaj do koszyka "{{ $movie->title }}"</b>
-                                            </button>
-                                        </form>
-                                        @else
-                                        <a href="{{ route('login') }}" class="btn btn-block custom-btn"><b>Zaloguj się, aby wypożyczyć "{{ $movie->title }}"</b></a>
-                                        @endif
-                                    </div>
-                                </div>
-                                <br>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card mb-3 m-5 w-100 m-auto">
-                        <div class="card-body">
-                            <h4 class="card-title">Opinie osób, które już obejrzały</h4>
-                            <hr>
-                            @foreach ($movie->opinions as $opinion)
-                            <div class="card my-2 bg-secondary">
-                                <div class="card-body">
-                                    <h6 class="card-subtitle mb-2 text-muted"><strong>Imię: </strong>{{ $opinion->user->first_name }}</h6>
-                                    <p class="card-text"><strong>Opinia: </strong>{{ $opinion->content }}</p>
-                                </div>
-                                <div class="card-footer">
-                                    <small class="text-light"><strong>Dodano: </strong>{{ $opinion->created_at->format('d-m-Y H:i') }}</small>
-                                </div>
-                                @endforeach
-                            </div>
                         </div>
                     </div>
                 </div>
+
+                {{-- Details --}}
+                <div class="col-lg-8">
+                    <p class="showcase-category mb-2">
+                        <a href="{{ route('movies.index', ['category' => $movie->category->id]) }}" class="showcase-category">
+                            {{ $movie->category->species }}
+                        </a>
+                    </p>
+
+                    <h1>{{ $movie->title }}</h1>
+
+                    <ul class="list-group list-group-flush rv-meta-list mb-4">
+                        <li class="list-group-item"><span>Gatunek</span><strong>{{ $movie->category->species }}</strong></li>
+                        <li class="list-group-item"><span>Reżyser</span><strong>{{ $movie->director }}</strong></li>
+                        <li class="list-group-item">
+                            <span>Rok premiery</span>
+                            <strong><time datetime="{{ $movie->release_year }}">{{ $movie->release_year }}</time></strong>
+                        </li>
+                        <li class="list-group-item">
+                            <span>Czas trwania</span>
+                            <strong><time datetime="PT{{ (int) $movie->duration }}M">{{ $movie->duration }} min</time></strong>
+                        </li>
+                        <li class="list-group-item">
+                            <span>Ocena</span>
+                            <strong><span class="rv-rating"><i class="bi bi-star-fill" aria-hidden="true"></i>{{ $movie->rate }}<span class="visually-hidden"> na 10</span></span></strong>
+                        </li>
+                        <li class="list-group-item"><span>Dostępność</span><strong>{{ $movie->available }}</strong></li>
+                    </ul>
+
+                    <div class="rv-price mb-4">
+                        @if (!empty($movie->super_promo_price))
+                            <h2 class="card-title">
+                                {{ $movie->super_promo_price }} zł
+                                <del>{{ $movie->price_day }} zł<span class="visually-hidden"> (cena przed obniżką)</span></del>
+                            </h2>
+                        @elseif ($promotionsEnabled && !empty($promoPrice))
+                            <h2 class="card-title">
+                                <del>{{ $movie->price_day }} zł<span class="visually-hidden"> (cena przed obniżką)</span></del>
+                                {{ $promoPrice }} zł
+                            </h2>
+                        @else
+                            <h2 class="card-title">{{ $movie->price_day }} zł</h2>
+                        @endif
+                        <span class="rv-text-sm">za dzień wypożyczenia</span>
+                    </div>
+
+                    <section aria-labelledby="description-heading">
+                        <h2 id="description-heading">Opis</h2>
+                        <p class="product-description">{{ $movie->description }}</p>
+                    </section>
+
+                    <div class="rv-cluster mt-4">
+                        @auth
+                            <button type="button" class="btn-action heart favoriting" data-movie-id="{{ $movie->id }}"
+                                    data-movie-title="{{ $movie->title }}"
+                                    onclick="toggleFavorite('{{ $movie->id }}')"
+                                    aria-pressed="false"
+                                    aria-label="Dodaj film {{ $movie->title }} do ulubionych">
+                                <i class="bi bi-heart" id="favorite-icon-{{ $movie->id }}" aria-hidden="true"></i>
+                            </button>
+
+                            <form action="{{ route('cart.add', ['movie_id' => $movie->id]) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn custom-btn" @disabled($rvIsAdmin)>
+                                    <i class="bi bi-bag-plus" aria-hidden="true"></i>
+                                    Dodaj do koszyka<span class="visually-hidden">: {{ $movie->title }}</span>
+                                </button>
+                            </form>
+
+                            @if ($rvIsAdmin)
+                                <p class="rv-field-hint mb-0">Konto administratora nie może wypożyczać filmów.</p>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}" class="btn custom-btn">
+                                <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+                                Zaloguj się, aby wypożyczyć<span class="visually-hidden"> film {{ $movie->title }}</span>
+                            </a>
+                        @endauth
+                    </div>
+                </div>
             </div>
-        </div>
+
+            {{-- Opinions --}}
+            <section class="rv-section" aria-labelledby="opinions-heading">
+                <div class="rv-section-title">
+                    <h2 id="opinions-heading">Opinie osób, które już obejrzały</h2>
+                    <span class="rv-text-muted rv-text-sm">
+                        {{ $movie->opinions->count() }}
+                        {{ $movie->opinions->count() === 1 ? 'opinia' : 'opinii' }}
+                    </span>
+                </div>
+
+                @forelse ($movie->opinions as $opinion)
+                    <article class="card mb-3">
+                        <div class="card-body">
+                            <h3 class="card-subtitle" style="font-size: var(--rv-text-base);">
+                                {{ $opinion->user->first_name }}
+                            </h3>
+                            <p class="card-text mt-2" style="color: var(--rv-text);">{{ $opinion->content }}</p>
+                        </div>
+                        <div class="card-footer">
+                            <small>
+                                Dodano
+                                <time datetime="{{ $opinion->created_at->toIso8601String() }}">
+                                    {{ $opinion->created_at->format('d.m.Y H:i') }}
+                                </time>
+                            </small>
+                        </div>
+                    </article>
+                @empty
+                    <div class="rv-empty">
+                        <h3>Brak opinii</h3>
+                        <p>Ten film nie ma jeszcze żadnej opinii. Wypożycz go i podziel się swoim zdaniem jako pierwszy.</p>
+                    </div>
+                @endforelse
+            </section>
+        </article>
+    </main>
+
+    <div id="imageOverlay" class="image-overlay" style="display: none;" role="dialog" aria-modal="true" aria-label="Powiększony plakat">
+        <button type="button" class="close-btn" aria-label="Zamknij powiększenie">&times;</button>
+        <img class="overlay-image" src="" alt="Powiększony plakat filmu">
     </div>
 
     @include('layouts.footer', ['fixedBottom' => false])
+
     <script defer src="{{ asset('js/magnification.js') }}"></script>
     <script defer src="{{ asset('js/favorite.js') }}"></script>
 </body>

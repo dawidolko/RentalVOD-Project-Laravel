@@ -1,0 +1,1888 @@
+/*-----------------------------------*\
+  #design-system.css
+  RentalVOD design system.
+
+  Single source of truth for colour, spacing, type, radii and shadows.
+  Loaded globally from layouts/head.blade.php AFTER bootstrap.css so the
+  tokens below win over Bootstrap defaults, and BEFORE the per-page
+  legacy stylesheets so page-specific rules can still override layout.
+
+  Contrast: every text pair defined here was measured against WCAG 2.2 AA
+  (>= 4.5:1 body text, >= 3:1 large text and non-text UI borders).
+\*-----------------------------------*/
+
+/*-----------------------------------*\
+  #TOKENS - LIGHT (default)
+\*-----------------------------------*/
+
+:root {
+    /* Brand: cinema crimson. Kept in the same family as the legacy
+       "darkred" / bs-danger accent the project already used. */
+    --rv-brand: #b3122a;
+    --rv-brand-strong: #8e0e21;
+    --rv-brand-soft: #fde7ea;
+    --rv-on-brand: #ffffff;
+    /* Fill behind --rv-on-brand text (buttons, badges, price blocks).
+       A separate token because in dark mode the accent that reads well as
+       TEXT on a dark ground is too light to sit behind white text. */
+    --rv-brand-fill: #b3122a;
+    --rv-brand-fill-hover: #8e0e21;
+
+    /* Neutral surfaces */
+    --rv-bg: #ffffff;
+    --rv-surface: #f5f6f8;
+    --rv-surface-2: #ebedf1;
+    --rv-surface-3: #dfe3e9;
+
+    /* Text */
+    --rv-text: #14171c;
+    --rv-text-muted: #545c68;
+    --rv-text-disabled: #5e6670;
+
+    /* Borders (>= 3:1 against their surface for 1.4.11) */
+    --rv-border: #767e8a;
+    --rv-border-soft: #c4cad3;
+    --rv-border-strong: #3f4650;
+
+    /* Status */
+    --rv-success: #14532d;
+    --rv-success-bg: #e3f6ea;
+    --rv-danger: #8e0e21;
+    --rv-danger-bg: #fde7ea;
+    --rv-info: #0f3d5c;
+    --rv-info-bg: #e4f1fb;
+    --rv-warning: #6b4a00;
+    --rv-warning-bg: #fdf1dc;
+
+    /* Rating / highlight */
+    --rv-amber: #6b4a00;
+    --rv-amber-bg: #fdf1dc;
+
+    /* Focus indicator - deliberately high contrast in both themes */
+    --rv-focus: #8e0e21;
+    --rv-focus-halo: #ffffff;
+
+    /* Spacing scale (4px base) */
+    --rv-space-1: 0.25rem;
+    --rv-space-2: 0.5rem;
+    --rv-space-3: 0.75rem;
+    --rv-space-4: 1rem;
+    --rv-space-5: 1.5rem;
+    --rv-space-6: 2rem;
+    --rv-space-7: 3rem;
+    --rv-space-8: 4rem;
+
+    /* Type scale (1.200 minor third, 16px base) */
+    --rv-font-sans: "Amazon Ember", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --rv-text-xs: 0.75rem;
+    --rv-text-sm: 0.875rem;
+    --rv-text-base: 1rem;
+    --rv-text-lg: 1.125rem;
+    --rv-text-xl: 1.375rem;
+    --rv-text-2xl: 1.75rem;
+    --rv-text-3xl: 2.25rem;
+    --rv-text-4xl: 3rem;
+
+    --rv-leading-tight: 1.2;
+    --rv-leading-snug: 1.4;
+    --rv-leading-normal: 1.6;
+
+    --rv-weight-normal: 400;
+    --rv-weight-medium: 500;
+    --rv-weight-semibold: 600;
+    --rv-weight-bold: 700;
+
+    /* Radii */
+    --rv-radius-sm: 4px;
+    --rv-radius-md: 8px;
+    --rv-radius-lg: 14px;
+    --rv-radius-pill: 999px;
+
+    /* Elevation */
+    --rv-shadow-sm: 0 1px 2px rgba(10, 12, 16, 0.08);
+    --rv-shadow-md: 0 4px 12px rgba(10, 12, 16, 0.10);
+    --rv-shadow-lg: 0 12px 32px rgba(10, 12, 16, 0.16);
+
+    /* Motion */
+    --rv-transition: 160ms ease;
+
+    /* Layout */
+    --rv-max-width: 1240px;
+    --rv-tap-target: 24px;
+
+    color-scheme: light;
+}
+
+/*-----------------------------------*\
+  #TOKENS - DARK
+  Applies both to the OS preference and to the explicit
+  data-bs-theme="dark" toggle the site already ships.
+\*-----------------------------------*/
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-bs-theme="light"]) {
+        --rv-brand: #ff5c6e;
+        --rv-brand-strong: #ff8a94;
+        --rv-brand-soft: #4a1119;
+        --rv-on-brand: #ffffff;
+        --rv-brand-fill: #c4152f;
+        --rv-brand-fill-hover: #a81028;
+
+        --rv-bg: #0e1013;
+        --rv-surface: #171a1f;
+        --rv-surface-2: #1f242b;
+        --rv-surface-3: #2a3038;
+
+        --rv-text: #f2f4f7;
+        --rv-text-muted: #aeb6c2;
+        --rv-text-disabled: #939ba7;
+
+        --rv-border: #6e7987;
+        --rv-border-soft: #333a44;
+        --rv-border-strong: #7a8595;
+
+        --rv-success: #a7f3c6;
+        --rv-success-bg: #14532d;
+        --rv-danger: #ffb3ba;
+        --rv-danger-bg: #4a1119;
+        --rv-info: #a8d8f5;
+        --rv-info-bg: #10314a;
+        --rv-warning: #ffd98a;
+        --rv-warning-bg: #43310b;
+
+        --rv-amber: #ffc857;
+        --rv-amber-bg: #43310b;
+
+        --rv-focus: #ffc857;
+        --rv-focus-halo: #0e1013;
+
+        --rv-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+        --rv-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.55);
+        --rv-shadow-lg: 0 14px 38px rgba(0, 0, 0, 0.65);
+
+        color-scheme: dark;
+    }
+}
+
+/* Explicit dark selection wins over the OS preference in both directions. */
+body[data-bs-theme="dark"],
+:root[data-bs-theme="dark"] {
+    --rv-brand: #ff5c6e;
+    --rv-brand-strong: #ff8a94;
+    --rv-brand-soft: #4a1119;
+    --rv-on-brand: #ffffff;
+    --rv-brand-fill: #c4152f;
+    --rv-brand-fill-hover: #a81028;
+
+    --rv-bg: #0e1013;
+    --rv-surface: #171a1f;
+    --rv-surface-2: #1f242b;
+    --rv-surface-3: #2a3038;
+
+    --rv-text: #f2f4f7;
+    --rv-text-muted: #aeb6c2;
+    --rv-text-disabled: #939ba7;
+
+    --rv-border: #6e7987;
+    --rv-border-soft: #333a44;
+    --rv-border-strong: #7a8595;
+
+    --rv-success: #a7f3c6;
+    --rv-success-bg: #14532d;
+    --rv-danger: #ffb3ba;
+    --rv-danger-bg: #4a1119;
+    --rv-info: #a8d8f5;
+    --rv-info-bg: #10314a;
+    --rv-warning: #ffd98a;
+    --rv-warning-bg: #43310b;
+
+    --rv-amber: #ffc857;
+    --rv-amber-bg: #43310b;
+
+    --rv-focus: #ffc857;
+    --rv-focus-halo: #0e1013;
+
+    --rv-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --rv-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.55);
+    --rv-shadow-lg: 0 14px 38px rgba(0, 0, 0, 0.65);
+
+    color-scheme: dark;
+}
+
+body[data-bs-theme="light"],
+:root[data-bs-theme="light"] {
+    color-scheme: light;
+}
+
+/*-----------------------------------*\
+  #BOOTSTRAP BRIDGE
+  Feed the tokens into the Bootstrap variables the markup already uses,
+  so existing .card / .table / .alert / .navbar classes inherit the
+  system without touching a single template class name.
+\*-----------------------------------*/
+
+:root,
+body {
+    --bs-body-bg: var(--rv-bg);
+    --bs-body-color: var(--rv-text);
+    --bs-border-color: var(--rv-border-soft);
+    --bs-secondary-color: var(--rv-text-muted);
+    --bs-emphasis-color: var(--rv-text);
+    --bs-tertiary-bg: var(--rv-surface);
+    --bs-secondary-bg: var(--rv-surface-2);
+    --bs-link-color: var(--rv-brand);
+    --bs-link-hover-color: var(--rv-brand-strong);
+    --bs-heading-color: var(--rv-text);
+}
+
+/*-----------------------------------*\
+  #BASE
+\*-----------------------------------*/
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    /* No horizontal scroll anywhere in the app. */
+    overflow-x: hidden;
+}
+
+body {
+    background-color: var(--rv-bg);
+    color: var(--rv-text);
+    font-family: var(--rv-font-sans);
+    /* The legacy head.css set body weight 700, which flattened the whole
+       type hierarchy. Normal weight restores contrast between headings
+       and copy. */
+    font-weight: var(--rv-weight-normal) !important;
+    font-size: var(--rv-text-base);
+    line-height: var(--rv-leading-normal);
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+/* Several legacy page stylesheets force html/body into a flex column with
+   height:100%, which fights the sticky navbar and clips long pages.
+   Normalise it once here. */
+html,
+body {
+    height: auto;
+    min-height: 100%;
+    display: block;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/*-----------------------------------*\
+  #TYPOGRAPHY
+\*-----------------------------------*/
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--rv-text);
+    font-weight: var(--rv-weight-bold);
+    line-height: var(--rv-leading-tight);
+    margin-block: 0 var(--rv-space-3);
+    text-wrap: balance;
+}
+
+h1 {
+    font-size: clamp(1.875rem, 1.4rem + 2vw, var(--rv-text-4xl));
+    letter-spacing: -0.02em;
+}
+
+h2 {
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, var(--rv-text-3xl));
+    letter-spacing: -0.01em;
+}
+
+h3 {
+    font-size: var(--rv-text-2xl);
+}
+
+h4 {
+    font-size: var(--rv-text-xl);
+}
+
+h5 {
+    font-size: var(--rv-text-lg);
+}
+
+h6 {
+    font-size: var(--rv-text-base);
+}
+
+p {
+    margin-block: 0 var(--rv-space-4);
+    max-width: 72ch;
+}
+
+small,
+.rv-text-sm {
+    font-size: var(--rv-text-sm);
+}
+
+.rv-text-muted {
+    color: var(--rv-text-muted) !important;
+}
+
+/* Bootstrap's .text-muted resolves to a grey that fails AA on our dark
+   surfaces - repoint it at the measured token. */
+.text-muted,
+.text-body-secondary {
+    color: var(--rv-text-muted) !important;
+}
+
+a {
+    color: var(--rv-brand);
+    text-underline-offset: 0.2em;
+}
+
+a:hover {
+    color: var(--rv-brand-strong);
+}
+
+/*-----------------------------------*\
+  #FOCUS - WCAG 2.2 (2.4.7, 2.4.11, 2.4.13)
+  A single visible indicator on every interactive element, with a halo so
+  it stays visible over both light and dark surfaces.
+\*-----------------------------------*/
+
+:focus-visible {
+    outline: 3px solid var(--rv-focus);
+    outline-offset: 2px;
+    border-radius: var(--rv-radius-sm);
+    box-shadow: 0 0 0 5px var(--rv-focus-halo);
+}
+
+/* Never remove focus for keyboard users, whatever the legacy CSS says. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid var(--rv-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 5px var(--rv-focus-halo);
+}
+
+/* Mouse users keep a clean UI; keyboard users always get the ring. */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/*-----------------------------------*\
+  #SKIP LINK (2.4.1 Bypass Blocks)
+\*-----------------------------------*/
+
+.rv-skip-link {
+    position: absolute;
+    left: var(--rv-space-2);
+    top: var(--rv-space-2);
+    z-index: 2000;
+    display: inline-block;
+    padding: var(--rv-space-3) var(--rv-space-4);
+    background: var(--rv-brand-fill);
+    color: var(--rv-on-brand);
+    font-weight: var(--rv-weight-semibold);
+    border-radius: var(--rv-radius-md);
+    box-shadow: var(--rv-shadow-lg);
+    text-decoration: none;
+    transform: translateY(-200%);
+    transition: transform var(--rv-transition);
+}
+
+.rv-skip-link:focus,
+.rv-skip-link:focus-visible {
+    transform: translateY(0);
+    color: var(--rv-on-brand);
+}
+
+/* Give the skip target a scroll offset so the sticky navbar does not
+   cover the heading it jumps to. */
+#main-content {
+    scroll-margin-top: 5rem;
+}
+
+/*-----------------------------------*\
+  #TARGET SIZE (2.5.8 - minimum 24x24 CSS px)
+\*-----------------------------------*/
+
+a.btn,
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+input[type="checkbox"],
+input[type="radio"],
+.nav-link,
+.dropdown-item,
+.page-link {
+    min-height: var(--rv-tap-target);
+    min-width: var(--rv-tap-target);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    /* Bootstrap ships these at 1em (~16px); enlarge to clear 24px with
+       the surrounding label click area. */
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-top: 0.2rem;
+}
+
+.form-check {
+    min-height: var(--rv-tap-target);
+    padding-block: var(--rv-space-1);
+}
+
+.form-check-label {
+    padding-inline-start: var(--rv-space-1);
+    cursor: pointer;
+}
+
+/*-----------------------------------*\
+  #BUTTONS
+\*-----------------------------------*/
+
+.btn {
+    --bs-btn-focus-box-shadow: none;
+    border-radius: var(--rv-radius-md);
+    font-weight: var(--rv-weight-semibold);
+    padding: var(--rv-space-2) var(--rv-space-5);
+    transition: background-color var(--rv-transition), color var(--rv-transition),
+        border-color var(--rv-transition), transform var(--rv-transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--rv-space-2);
+    text-decoration: none;
+}
+
+/* .custom-btn is the project's primary action, previously grey-on-grey
+   (about 2.3:1). Repointed at the brand token: 6.9:1 with white text. */
+.btn.custom-btn,
+.custom-btn {
+    background-color: var(--rv-brand-fill);
+    color: var(--rv-on-brand);
+    border: 1px solid transparent;
+}
+
+.btn.custom-btn:hover,
+.custom-btn:hover,
+.btn.custom-btn:focus-visible,
+.custom-btn:focus-visible {
+    background-color: var(--rv-brand-fill-hover);
+    color: var(--rv-on-brand);
+}
+
+.btn.custom-btn:active,
+.custom-btn:active {
+    transform: translateY(1px);
+}
+
+.btn:disabled,
+.btn.disabled,
+.custom-btn:disabled,
+button:disabled {
+    /* Disabled state must read as disabled without relying on colour
+       alone - cursor + reduced opacity + no hover movement. */
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-sm {
+    padding: var(--rv-space-2) var(--rv-space-3);
+    font-size: var(--rv-text-sm);
+    min-height: var(--rv-tap-target);
+}
+
+/* Bootstrap's contextual buttons at AA on both themes. */
+.btn-success {
+    --bs-btn-bg: #146c43;
+    --bs-btn-border-color: #146c43;
+    --bs-btn-hover-bg: #0f5132;
+    --bs-btn-hover-border-color: #0f5132;
+    --bs-btn-color: #ffffff;
+    --bs-btn-hover-color: #ffffff;
+}
+
+.btn-danger {
+    --bs-btn-bg: #b3122a;
+    --bs-btn-border-color: #b3122a;
+    --bs-btn-hover-bg: #8e0e21;
+    --bs-btn-hover-border-color: #8e0e21;
+    --bs-btn-color: #ffffff;
+    --bs-btn-hover-color: #ffffff;
+}
+
+.btn-primary {
+    --bs-btn-bg: #0b5ed7;
+    --bs-btn-border-color: #0b5ed7;
+    --bs-btn-hover-bg: #094db1;
+    --bs-btn-hover-border-color: #094db1;
+    --bs-btn-color: #ffffff;
+    --bs-btn-hover-color: #ffffff;
+}
+
+.btn-info {
+    --bs-btn-bg: #0f5c86;
+    --bs-btn-border-color: #0f5c86;
+    --bs-btn-hover-bg: #0b4666;
+    --bs-btn-hover-border-color: #0b4666;
+    --bs-btn-color: #ffffff;
+    --bs-btn-hover-color: #ffffff;
+}
+
+.btn-warning {
+    --bs-btn-bg: #a06800;
+    --bs-btn-border-color: #a06800;
+    --bs-btn-hover-bg: #7d5100;
+    --bs-btn-hover-border-color: #7d5100;
+    --bs-btn-color: #ffffff;
+    --bs-btn-hover-color: #ffffff;
+}
+
+.btn-secondary {
+    --bs-btn-bg: #4b5563;
+    --bs-btn-border-color: #4b5563;
+    --bs-btn-hover-bg: #374151;
+    --bs-btn-hover-border-color: #374151;
+    --bs-btn-color: #ffffff;
+    --bs-btn-hover-color: #ffffff;
+}
+
+/*-----------------------------------*\
+  #FORMS
+\*-----------------------------------*/
+
+.form-label,
+label {
+    display: inline-block;
+    color: var(--rv-text);
+    font-weight: var(--rv-weight-semibold);
+    font-size: var(--rv-text-sm);
+    margin-bottom: var(--rv-space-2);
+}
+
+.form-control,
+.form-select,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="month"],
+input[type="file"],
+select,
+textarea {
+    background-color: var(--rv-surface-2);
+    color: var(--rv-text);
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-radius-md);
+    padding: var(--rv-space-3) var(--rv-space-3);
+    min-height: 2.75rem;
+    font-size: var(--rv-text-base);
+    transition: border-color var(--rv-transition), background-color var(--rv-transition);
+    max-width: 100%;
+}
+
+.form-control:hover,
+.form-select:hover {
+    border-color: var(--rv-border-strong);
+}
+
+.form-control:focus,
+.form-select:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    background-color: var(--rv-surface-2);
+    color: var(--rv-text);
+    border-color: var(--rv-brand);
+    box-shadow: none;
+}
+
+.form-control::placeholder,
+textarea::placeholder {
+    color: var(--rv-text-muted);
+    opacity: 1;
+}
+
+.form-control:disabled,
+.form-select:disabled {
+    background-color: var(--rv-surface-3);
+    color: var(--rv-text-disabled);
+    cursor: not-allowed;
+}
+
+/* Invalid fields: red border PLUS an icon-free text message underneath,
+   so the error is never signalled by colour alone (1.4.1). */
+.form-control.is-invalid,
+.form-select.is-invalid,
+[aria-invalid="true"] {
+    border-color: var(--rv-brand);
+    border-width: 2px;
+    background-image: none;
+    padding-right: var(--rv-space-3);
+}
+
+.invalid-feedback,
+.rv-field-error {
+    display: block;
+    color: var(--rv-danger);
+    background: var(--rv-danger-bg);
+    border-left: 3px solid var(--rv-brand);
+    border-radius: var(--rv-radius-sm);
+    padding: var(--rv-space-2) var(--rv-space-3);
+    margin-top: var(--rv-space-2);
+    font-size: var(--rv-text-sm);
+    font-weight: var(--rv-weight-medium);
+}
+
+.rv-field-hint {
+    display: block;
+    color: var(--rv-text-muted);
+    font-size: var(--rv-text-sm);
+    margin-top: var(--rv-space-1);
+}
+
+fieldset {
+    border: 1px solid var(--rv-border-soft);
+    border-radius: var(--rv-radius-md);
+    padding: var(--rv-space-4);
+    margin-bottom: var(--rv-space-5);
+}
+
+legend {
+    float: none;
+    width: auto;
+    padding-inline: var(--rv-space-2);
+    font-size: var(--rv-text-lg);
+    font-weight: var(--rv-weight-semibold);
+}
+
+/*-----------------------------------*\
+  #CARDS & SURFACES
+\*-----------------------------------*/
+
+.card {
+    --bs-card-bg: var(--rv-surface);
+    --bs-card-border-color: var(--rv-border-soft);
+    --bs-card-color: var(--rv-text);
+    background-color: var(--rv-surface);
+    color: var(--rv-text);
+    border: 1px solid var(--rv-border-soft);
+    border-radius: var(--rv-radius-lg);
+    box-shadow: var(--rv-shadow-sm);
+    overflow: hidden;
+}
+
+.card-header,
+.card-footer {
+    background-color: var(--rv-surface-2);
+    border-color: var(--rv-border-soft);
+    color: var(--rv-text);
+}
+
+.card-title {
+    color: var(--rv-text);
+}
+
+.card-text {
+    color: var(--rv-text-muted);
+}
+
+/* Legacy utility classes used across the movie templates. */
+.bg-dark1,
+.bg-dark2,
+.bg-dark3,
+.bg-dark4,
+.bg-dark5,
+.bg-dark6 {
+    background-color: var(--rv-surface-2) !important;
+    color: var(--rv-text) !important;
+}
+
+.text-danger2 {
+    color: var(--rv-brand) !important;
+    font-weight: var(--rv-weight-semibold);
+}
+
+.list-group-item {
+    background-color: var(--rv-surface-2);
+    color: var(--rv-text);
+    border-color: var(--rv-border-soft);
+}
+
+/*-----------------------------------*\
+  #ALERTS / FLASH MESSAGES
+\*-----------------------------------*/
+
+.alert {
+    border-radius: var(--rv-radius-md);
+    border: 1px solid transparent;
+    border-left-width: 4px;
+    padding: var(--rv-space-4);
+    font-weight: var(--rv-weight-medium);
+}
+
+.alert-success {
+    background-color: var(--rv-success-bg);
+    color: var(--rv-success);
+    border-color: var(--rv-success);
+}
+
+.alert-danger {
+    background-color: var(--rv-danger-bg);
+    color: var(--rv-danger);
+    border-color: var(--rv-danger);
+}
+
+.alert-info {
+    background-color: var(--rv-info-bg);
+    color: var(--rv-info);
+    border-color: var(--rv-info);
+}
+
+.alert-warning {
+    background-color: var(--rv-warning-bg);
+    color: var(--rv-warning);
+    border-color: var(--rv-warning);
+}
+
+.alert ul {
+    margin-bottom: 0;
+    padding-left: var(--rv-space-5);
+}
+
+.alert a {
+    color: inherit;
+    font-weight: var(--rv-weight-semibold);
+}
+
+/* Flash region: gives aria-live announcements a consistent home. */
+.rv-flash {
+    display: grid;
+    gap: var(--rv-space-3);
+    margin-bottom: var(--rv-space-5);
+}
+
+.rv-alert-title {
+    display: block;
+    font-weight: var(--rv-weight-bold);
+    margin-bottom: var(--rv-space-1);
+}
+
+/*-----------------------------------*\
+  #TABLES
+\*-----------------------------------*/
+
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--rv-text);
+    --bs-table-border-color: var(--rv-border-soft);
+    --bs-table-striped-bg: var(--rv-surface-2);
+    --bs-table-striped-color: var(--rv-text);
+    --bs-table-hover-bg: var(--rv-surface-3);
+    --bs-table-hover-color: var(--rv-text);
+    color: var(--rv-text);
+    border-color: var(--rv-border-soft);
+    margin-bottom: 0;
+}
+
+.table caption {
+    caption-side: top;
+    color: var(--rv-text-muted);
+    font-size: var(--rv-text-sm);
+    padding-block: var(--rv-space-2);
+    text-align: left;
+}
+
+.table thead th {
+    background-color: var(--rv-surface-2);
+    color: var(--rv-text);
+    font-weight: var(--rv-weight-semibold);
+    font-size: var(--rv-text-sm);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--rv-border);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.table td,
+.table th {
+    padding: var(--rv-space-3);
+    vertical-align: middle;
+}
+
+/* The profile / admin templates apply .text-white to tables, which is
+   unreadable on the light theme. Force the themed token instead. */
+.table.text-white,
+.table.text-white td,
+.table.text-white th {
+    color: var(--rv-text) !important;
+}
+
+.table-responsive {
+    border-radius: var(--rv-radius-md);
+    border: 1px solid var(--rv-border-soft);
+    overflow-x: auto;
+    /* Keyboard users must be able to scroll the region (2.1.1). */
+    scrollbar-width: thin;
+}
+
+/*-----------------------------------*\
+  #NAVBAR
+\*-----------------------------------*/
+
+.navbar {
+    background-color: var(--rv-surface) !important;
+    border-bottom: 1px solid var(--rv-border-soft);
+    box-shadow: var(--rv-shadow-sm);
+    padding-block: var(--rv-space-2);
+}
+
+.navbar .navbar-brand {
+    color: var(--rv-text);
+    font-weight: var(--rv-weight-bold);
+    font-size: var(--rv-text-xl);
+    letter-spacing: -0.01em;
+}
+
+.navbar .navbar-brand b {
+    color: var(--rv-brand);
+}
+
+.navbar .nav-link {
+    color: var(--rv-text);
+    font-weight: var(--rv-weight-medium);
+    border-radius: var(--rv-radius-sm);
+    padding-inline: var(--rv-space-3);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--rv-space-1);
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus-visible {
+    color: var(--rv-brand);
+}
+
+/* The legacy .red-after hover colour resolved through Bootstrap's danger
+   RGB and could drop below AA on the light theme. */
+.red-after:hover {
+    color: var(--rv-brand) !important;
+}
+
+.dropdown-menu {
+    background-color: var(--rv-surface);
+    border: 1px solid var(--rv-border-soft);
+    border-radius: var(--rv-radius-md);
+    box-shadow: var(--rv-shadow-md);
+    padding-block: var(--rv-space-2);
+}
+
+.dropdown-item {
+    color: var(--rv-text);
+    padding: var(--rv-space-2) var(--rv-space-4);
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--rv-surface-3);
+    color: var(--rv-brand);
+}
+
+/* Admin navigation pills - the inline rgba(0,0,0,.5) backgrounds in the
+   template are unreadable on light backgrounds; token them instead. */
+#admin-links .nav-item {
+    background: var(--rv-surface-2) !important;
+    border-radius: var(--rv-radius-sm);
+    margin-inline: 1px;
+}
+
+#theme-toggle {
+    background: transparent;
+    border: 1px solid var(--rv-border-soft);
+    border-radius: var(--rv-radius-md);
+    color: var(--rv-text);
+    padding: var(--rv-space-2) var(--rv-space-3);
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+}
+
+#theme-toggle:hover {
+    background: var(--rv-surface-3);
+    color: var(--rv-brand);
+}
+
+.rv-points-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--rv-space-1);
+    background: var(--rv-brand-fill);
+    color: var(--rv-on-brand) !important;
+    border-radius: var(--rv-radius-pill);
+    padding: var(--rv-space-1) var(--rv-space-4);
+    font-weight: var(--rv-weight-semibold);
+    font-size: var(--rv-text-sm);
+}
+
+/*-----------------------------------*\
+  #FOOTER
+\*-----------------------------------*/
+
+footer {
+    background-color: var(--rv-surface) !important;
+    border-top: 1px solid var(--rv-border-soft);
+    color: var(--rv-text-muted);
+    padding-block: var(--rv-space-5);
+    margin-top: var(--rv-space-8);
+}
+
+footer a {
+    color: var(--rv-text);
+}
+
+footer a:hover {
+    color: var(--rv-brand);
+}
+
+footer p {
+    margin-bottom: 0;
+    max-width: none;
+}
+
+.rv-footer-social {
+    display: flex;
+    gap: var(--rv-space-3);
+    justify-content: center;
+    align-items: center;
+}
+
+.rv-footer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--rv-radius-md);
+    border: 1px solid var(--rv-border-soft);
+}
+
+.rv-footer-social a:hover {
+    background: var(--rv-surface-3);
+    border-color: var(--rv-brand);
+}
+
+/*-----------------------------------*\
+  #BREADCRUMBS
+\*-----------------------------------*/
+
+.rv-breadcrumb {
+    padding-block: var(--rv-space-4) 0;
+}
+
+.rv-breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--rv-space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--rv-text-sm);
+}
+
+.rv-breadcrumb li {
+    display: flex;
+    align-items: center;
+    gap: var(--rv-space-2);
+    color: var(--rv-text-muted);
+}
+
+.rv-breadcrumb li + li::before {
+    content: "/";
+    color: var(--rv-text-muted);
+    /* Decorative separator - hidden from assistive tech. */
+    speak: never;
+}
+
+.rv-breadcrumb a {
+    color: var(--rv-text-muted);
+    text-decoration: none;
+}
+
+.rv-breadcrumb a:hover {
+    color: var(--rv-brand);
+    text-decoration: underline;
+}
+
+.rv-breadcrumb [aria-current="page"] {
+    color: var(--rv-text);
+    font-weight: var(--rv-weight-semibold);
+}
+
+/*-----------------------------------*\
+  #PAGE SHELL
+\*-----------------------------------*/
+
+.rv-page {
+    max-width: var(--rv-max-width);
+    margin-inline: auto;
+    padding-inline: var(--rv-space-4);
+    padding-block: var(--rv-space-6);
+    width: 100%;
+}
+
+.rv-page-header {
+    margin-bottom: var(--rv-space-6);
+    padding-bottom: var(--rv-space-4);
+    border-bottom: 1px solid var(--rv-border-soft);
+}
+
+.rv-page-header p {
+    color: var(--rv-text-muted);
+    margin-bottom: 0;
+}
+
+.rv-section {
+    margin-block: var(--rv-space-7);
+}
+
+.rv-section-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--rv-space-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--rv-space-4);
+    padding-bottom: var(--rv-space-3);
+    border-bottom: 1px solid var(--rv-border-soft);
+}
+
+.rv-section-title h2 {
+    margin-bottom: 0;
+}
+
+/*-----------------------------------*\
+  #MOVIE GRID / CARDS
+\*-----------------------------------*/
+
+.product-grid {
+    display: grid;
+    /* Auto-fit keeps posters at a sane size at every breakpoint without
+       a media-query ladder, and never overflows horizontally. */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: var(--rv-space-5);
+    padding: 0;
+    align-items: stretch;
+}
+
+.product-grid .showcase {
+    display: flex;
+    flex-direction: column;
+    background: var(--rv-surface);
+    border: 1px solid var(--rv-border-soft);
+    border-radius: var(--rv-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--rv-shadow-sm);
+    transition: transform var(--rv-transition), box-shadow var(--rv-transition),
+        border-color var(--rv-transition);
+}
+
+.product-grid .showcase:hover,
+.product-grid .showcase:focus-within {
+    transform: translateY(-4px);
+    box-shadow: var(--rv-shadow-lg);
+    border-color: var(--rv-brand);
+}
+
+.product-grid .showcase-banner {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    background: var(--rv-surface-3);
+    overflow: hidden;
+}
+
+.product-grid .product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--rv-border-soft);
+}
+
+.product-grid .showcase-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--rv-space-2);
+    padding: var(--rv-space-4);
+    flex: 1 1 auto;
+}
+
+.showcase-category {
+    display: inline-block;
+    font-size: var(--rv-text-xs);
+    font-weight: var(--rv-weight-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--rv-brand);
+    text-decoration: none;
+}
+
+.showcase-title {
+    font-size: var(--rv-text-lg);
+    font-weight: var(--rv-weight-bold);
+    color: var(--rv-text);
+    margin: 0;
+    line-height: var(--rv-leading-snug);
+}
+
+.product-grid .showcase-content a {
+    text-decoration: none;
+}
+
+.product-grid .showcase-content a:hover .showcase-title {
+    color: var(--rv-brand);
+}
+
+/* Metadata list inside a movie card. */
+.product-grid .list-group,
+.rv-meta-list {
+    background: transparent !important;
+    border-radius: var(--rv-radius-md);
+    overflow: hidden;
+    margin-block: var(--rv-space-2);
+}
+
+.product-grid .list-group-item,
+.rv-meta-list .list-group-item {
+    background: var(--rv-surface-2) !important;
+    color: var(--rv-text) !important;
+    border-color: var(--rv-border-soft);
+    font-size: var(--rv-text-sm);
+    padding: var(--rv-space-2) var(--rv-space-3);
+    text-align: left !important;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--rv-space-3);
+}
+
+/* Price block - previously a hard-coded dark red inline style that
+   failed on the light theme. */
+.product-grid .card-footer,
+.rv-price {
+    background: var(--rv-brand-fill) !important;
+    color: var(--rv-on-brand) !important;
+    border: none;
+    border-radius: var(--rv-radius-md) !important;
+    text-align: center;
+    padding: var(--rv-space-3) !important;
+    margin-top: auto;
+}
+
+.product-grid .card-footer .card-title,
+.rv-price .card-title {
+    color: var(--rv-on-brand) !important;
+    margin: 0;
+    font-size: var(--rv-text-lg);
+    font-weight: var(--rv-weight-bold);
+}
+
+.product-grid .card-footer del,
+.rv-price del {
+    opacity: 0.85;
+    font-weight: var(--rv-weight-normal);
+    font-size: var(--rv-text-sm);
+}
+
+.product-grid .card-body {
+    padding: var(--rv-space-3) 0 0;
+    display: block;
+    background: transparent;
+}
+
+/* Overlay action buttons on the poster. */
+.showcase-actions {
+    position: absolute;
+    top: var(--rv-space-3);
+    right: var(--rv-space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--rv-space-2);
+    z-index: 3;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--rv-radius-md);
+    background: var(--rv-bg);
+    color: var(--rv-text);
+    border: 1px solid var(--rv-border);
+    box-shadow: var(--rv-shadow-sm);
+    transition: background-color var(--rv-transition), color var(--rv-transition);
+    padding: 0;
+}
+
+.btn-action:hover,
+.btn-action:focus-visible {
+    background: var(--rv-brand-fill);
+    color: var(--rv-on-brand);
+    border-color: var(--rv-brand-fill);
+}
+
+.btn-action a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    width: 100%;
+    height: 100%;
+}
+
+.btn-action:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Rating pill used on movie metadata. */
+.rv-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--rv-space-1);
+    background: var(--rv-amber-bg);
+    color: var(--rv-amber);
+    border-radius: var(--rv-radius-pill);
+    padding: 0 var(--rv-space-3);
+    font-weight: var(--rv-weight-semibold);
+    font-size: var(--rv-text-sm);
+    min-height: var(--rv-tap-target);
+}
+
+/*-----------------------------------*\
+  #EMPTY STATES
+\*-----------------------------------*/
+
+.rv-empty {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--rv-space-3);
+    text-align: center;
+    padding: var(--rv-space-8) var(--rv-space-5);
+    background: var(--rv-surface);
+    border: 1px dashed var(--rv-border);
+    border-radius: var(--rv-radius-lg);
+    color: var(--rv-text-muted);
+}
+
+.rv-empty h2,
+.rv-empty h3 {
+    margin: 0;
+    color: var(--rv-text);
+    font-size: var(--rv-text-xl);
+}
+
+.rv-empty p {
+    margin: 0;
+    max-width: 46ch;
+}
+
+/*-----------------------------------*\
+  #PAGINATION
+\*-----------------------------------*/
+
+.pagination {
+    --bs-pagination-bg: var(--rv-surface);
+    --bs-pagination-color: var(--rv-text);
+    --bs-pagination-border-color: var(--rv-border-soft);
+    --bs-pagination-hover-bg: var(--rv-surface-3);
+    --bs-pagination-hover-color: var(--rv-brand);
+    --bs-pagination-focus-bg: var(--rv-surface-3);
+    --bs-pagination-focus-box-shadow: none;
+    --bs-pagination-active-bg: var(--rv-brand-fill);
+    --bs-pagination-active-border-color: var(--rv-brand-fill);
+    --bs-pagination-active-color: var(--rv-on-brand);
+    --bs-pagination-disabled-bg: var(--rv-surface-2);
+    --bs-pagination-disabled-color: var(--rv-text-disabled);
+    --bs-pagination-disabled-border-color: var(--rv-border-soft);
+    gap: var(--rv-space-1);
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.page-link {
+    border-radius: var(--rv-radius-md);
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--rv-weight-medium);
+}
+
+/*-----------------------------------*\
+  #MEDIA / VIDEO
+\*-----------------------------------*/
+
+.video-container {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    padding-bottom: 0;
+    height: auto;
+    width: 100%;
+    border-radius: var(--rv-radius-md);
+    overflow: hidden;
+    background: #000;
+    margin-block: var(--rv-space-4);
+}
+
+.video-container iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/*-----------------------------------*\
+  #IMAGE LIGHTBOX
+\*-----------------------------------*/
+
+.image-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.88);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--rv-space-6);
+}
+
+.overlay-image {
+    max-width: min(90vw, 900px);
+    max-height: 85vh;
+    border-radius: var(--rv-radius-md);
+    box-shadow: var(--rv-shadow-lg);
+}
+
+.close-btn {
+    position: absolute;
+    top: var(--rv-space-4);
+    right: var(--rv-space-5);
+    font-size: 2rem;
+    line-height: 1;
+    color: #fff;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: var(--rv-radius-md);
+    width: 2.75rem;
+    height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*-----------------------------------*\
+  #CATEGORY STRIP  (layouts/categories)
+\*-----------------------------------*/
+
+.unique-title {
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.unique-slider-container {
+    display: flex;
+    gap: var(--rv-space-4);
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-block: var(--rv-space-3);
+    scrollbar-width: thin;
+}
+
+.unique-frame {
+    position: relative;
+    flex: 0 0 auto;
+    width: 12rem;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--rv-radius-md);
+    overflow: hidden;
+    border: 1px solid var(--rv-border-soft);
+    text-decoration: none;
+}
+
+.unique-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--rv-transition);
+}
+
+.unique-frame:hover img,
+.unique-frame:focus-visible img {
+    transform: scale(1.06);
+}
+
+.unique-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0));
+    color: #fff;
+    font-weight: var(--rv-weight-semibold);
+    padding: var(--rv-space-4) var(--rv-space-3) var(--rv-space-2);
+    text-align: center;
+}
+
+.unique-scroll-left,
+.unique-scroll-right {
+    background: var(--rv-surface);
+    color: var(--rv-text);
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-radius-md);
+    width: 2.75rem;
+    height: 2.75rem;
+}
+
+.unique-scroll-left:hover,
+.unique-scroll-right:hover {
+    background: var(--rv-brand-fill);
+    color: var(--rv-on-brand);
+    border-color: var(--rv-brand-fill);
+}
+
+/*-----------------------------------*\
+  #TOP 10 SLIDER
+\*-----------------------------------*/
+
+.top-movies-content {
+    background: rgba(8, 10, 13, 0.82);
+    border-radius: var(--rv-radius-lg);
+    padding: var(--rv-space-5);
+    color: #fff;
+    max-width: min(90%, 34rem);
+}
+
+.top-movies-content h2,
+.top-movies-content h3 {
+    color: #fff;
+    background: none !important;
+}
+
+.top-movies-content p {
+    color: #e6e9ee;
+    background: none !important;
+    margin-bottom: var(--rv-space-2);
+}
+
+.top-movies-controls button {
+    background: rgba(8, 10, 13, 0.8);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: var(--rv-radius-md);
+    width: 3rem;
+    height: 3rem;
+    font-size: var(--rv-text-lg);
+    margin-inline: var(--rv-space-3);
+}
+
+.top-movies-controls button:hover {
+    background: var(--rv-brand-fill);
+    border-color: var(--rv-brand-fill);
+}
+
+/*-----------------------------------*\
+  #ERROR PAGES
+\*-----------------------------------*/
+
+.rv-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--rv-space-4);
+    min-height: 55vh;
+    padding: var(--rv-space-7) var(--rv-space-4);
+}
+
+.rv-error-code {
+    font-size: clamp(4rem, 3rem + 10vw, 9rem);
+    font-weight: var(--rv-weight-bold);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--rv-brand);
+    margin: 0;
+}
+
+.rv-error h1 {
+    font-size: var(--rv-text-2xl);
+    margin: 0;
+}
+
+.rv-error p {
+    color: var(--rv-text-muted);
+    max-width: 52ch;
+    margin: 0;
+}
+
+.rv-error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rv-space-3);
+    justify-content: center;
+    margin-top: var(--rv-space-3);
+}
+
+.rv-error-detail {
+    background: var(--rv-surface-2);
+    border: 1px solid var(--rv-border-soft);
+    border-radius: var(--rv-radius-md);
+    padding: var(--rv-space-3) var(--rv-space-4);
+    font-size: var(--rv-text-sm);
+    color: var(--rv-text-muted);
+    max-width: 60ch;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+/*-----------------------------------*\
+  #HELPERS
+\*-----------------------------------*/
+
+.rv-visually-hidden,
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.rv-stack {
+    display: grid;
+    gap: var(--rv-space-4);
+}
+
+.rv-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rv-space-3);
+    align-items: center;
+}
+
+.disabled-link {
+    color: var(--rv-text-disabled);
+    text-decoration: none;
+    cursor: not-allowed;
+}
+
+/* The legacy .full-height blocks used for "please log in" states. */
+.full-height {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--rv-space-4);
+    text-align: center;
+}
+
+.text-large {
+    font-size: var(--rv-text-xl);
+    text-align: center;
+    color: var(--rv-text);
+}
+
+/* Legacy page stylesheets pin .marginbig to a viewport height, which
+   crops long forms on short screens. */
+.marginbig {
+    height: auto !important;
+    min-height: auto !important;
+    display: block !important;
+    padding-block: var(--rv-space-6);
+}
+
+/*-----------------------------------*\
+  #RESPONSIVE
+\*-----------------------------------*/
+
+@media (max-width: 768px) {
+    :root {
+        --rv-space-7: 2rem;
+        --rv-space-8: 2.5rem;
+    }
+
+    .rv-page {
+        padding-inline: var(--rv-space-3);
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+        gap: var(--rv-space-4);
+    }
+
+    .table thead th {
+        white-space: normal;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rv-footer-social {
+        flex-wrap: wrap;
+    }
+}
+
+/*-----------------------------------*\
+  #REDUCED MOTION (2.3.3)
+\*-----------------------------------*/
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .product-grid .showcase:hover,
+    .product-grid .showcase:focus-within {
+        transform: none;
+    }
+
+    .unique-frame:hover img,
+    .unique-frame:focus-visible img {
+        transform: none;
+    }
+
+    .carousel-item {
+        transition: none !important;
+    }
+}
+
+/*-----------------------------------*\
+  #FORCED COLORS
+\*-----------------------------------*/
+
+@media (forced-colors: active) {
+    :focus-visible {
+        outline: 3px solid CanvasText;
+    }
+
+    .btn,
+    .card,
+    .product-grid .showcase {
+        border: 1px solid CanvasText;
+    }
+}
+
+/*-----------------------------------*\
+  #PRINT
+\*-----------------------------------*/
+
+@media print {
+    :root {
+        --rv-bg: #ffffff;
+        --rv-surface: #ffffff;
+        --rv-surface-2: #ffffff;
+        --rv-surface-3: #ffffff;
+        --rv-text: #000000;
+        --rv-text-muted: #333333;
+        --rv-border-soft: #999999;
+        --rv-border: #666666;
+    }
+
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 11pt;
+    }
+
+    /* Chrome and controls carry no meaning on paper. */
+    .navbar,
+    footer,
+    .rv-skip-link,
+    .showcase-actions,
+    .top-movies-controls,
+    .unique-scroll-left,
+    .unique-scroll-right,
+    .carousel-control-prev,
+    .carousel-control-next,
+    .pagination,
+    .btn,
+    .toast,
+    #imageOverlay,
+    .image-overlay,
+    form button,
+    #theme-toggle,
+    .chart-container {
+        display: none !important;
+    }
+
+    a {
+        color: #000 !important;
+        text-decoration: underline;
+    }
+
+    /* Expose link targets that would otherwise be lost in print. */
+    main a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        font-size: 9pt;
+        color: #444;
+    }
+
+    .card,
+    .product-grid .showcase,
+    .table-responsive {
+        border: 1px solid #999 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    h1,
+    h2,
+    h3 {
+        break-after: avoid;
+    }
+
+    table {
+        break-inside: auto;
+    }
+
+    tr {
+        break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    @page {
+        margin: 1.5cm;
+    }
+}
+
+/*-----------------------------------*\
+  #PROFILE: AUTOCOMPLETE & SNACKBAR
+\*-----------------------------------*/
+
+#emailList {
+    position: relative;
+    margin-top: var(--rv-space-1);
+    max-height: 14rem;
+    overflow-y: auto;
+    border-radius: var(--rv-radius-md);
+}
+
+#emailList:not(:empty) {
+    border: 1px solid var(--rv-border);
+    background: var(--rv-surface);
+    box-shadow: var(--rv-shadow-md);
+}
+
+.suggestion {
+    padding: var(--rv-space-3);
+    cursor: pointer;
+    color: var(--rv-text);
+    min-height: var(--rv-tap-target);
+    border-bottom: 1px solid var(--rv-border-soft);
+}
+
+.suggestion:last-child {
+    border-bottom: none;
+}
+
+.suggestion:hover,
+.suggestion.is-active {
+    background: var(--rv-surface-3);
+    color: var(--rv-brand);
+}
+
+#snackbar {
+    visibility: hidden;
+    opacity: 0;
+    position: fixed;
+    left: 50%;
+    bottom: var(--rv-space-6);
+    transform: translateX(-50%);
+    z-index: 1100;
+    min-width: min(90vw, 22rem);
+    background-color: var(--rv-brand-fill);
+    color: #fff;
+    text-align: center;
+    border-radius: var(--rv-radius-md);
+    box-shadow: var(--rv-shadow-lg);
+    padding: var(--rv-space-4);
+    transition: opacity var(--rv-transition), visibility var(--rv-transition);
+}
+
+#snackbar.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Definition lists used for the account summary. */
+dl dt {
+    color: var(--rv-text-muted);
+    font-weight: var(--rv-weight-semibold);
+    font-size: var(--rv-text-sm);
+}
+
+dl dd {
+    color: var(--rv-text);
+    margin-bottom: var(--rv-space-3);
+}
+
+code {
+    background: var(--rv-surface-2);
+    color: var(--rv-brand);
+    padding: var(--rv-space-1) var(--rv-space-2);
+    border-radius: var(--rv-radius-sm);
+    font-size: var(--rv-text-sm);
+}
+
+/* Chart canvases inherit the page background rather than staying white. */
+.chart-container {
+    background: transparent;
+}

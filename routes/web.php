@@ -18,6 +18,7 @@ Route::middleware([ShareDataToViews::class, EnsureUserHasLoyaltyPoints::class])-
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/regulamin', [HomeController::class, 'regulamin'])->name('regulamin');
+    Route::get('/sitemap.xml', [HomeController::class, 'sitemap'])->name('sitemap');
     Route::get('/search', [MoviesController::class, 'search'])->name('movies.search');
     Route::get('/movies', [MoviesController::class, 'index'])->name('movies.index');
     Route::get('/movie/{id}', [MoviesController::class, 'show'])->name('movies.show');

@@ -1,63 +1,70 @@
 @include('layouts.html')
-
-@include('layouts.head', ['pageTitle' => 'RentalVOD - logowanie'])
-
-<head>
-    <link rel="stylesheet" href="{{ asset('css/styleLogin.css') }}">
-</head>
+@include('layouts.head', [
+    'pageTitle' => 'Logowanie - RentalVOD',
+    'metaDescription' => 'Zaloguj się do swojego konta RentalVOD, aby wypożyczać filmy i korzystać z punktów lojalnościowych.',
+    'robots' => 'noindex, follow',
+    'canonical' => route('login'),
+])
 
 <body>
     @include('layouts.navbar')
 
-    <div class="container mt-5 mb-5 marginbig">
+    <main id="main-content" class="rv-page">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-5">
+                <header class="text-center mb-4">
+                    <img src="{{ asset('storage/img/logo.webp') }}" alt="" width="120" height="120" style="max-width: 120px; height: auto;">
+                    <h1 class="mt-3">Zaloguj się</h1>
+                    <p class="rv-text-muted">Wpisz dane swojego konta, aby kontynuować.</p>
+                </header>
 
-        <div class="row mt-4 mb-4 text-center">
-            <div class="col-12">
-                <img src="{{ asset('storage/img/logo.webp') }}" alt="Logo" class="img-fluid" style="max-width: 150px; margin-bottom: 20px; border-radius: 50">
-                <h1>Zaloguj się</h1>
+                @include('layouts.success')
+                @include('layouts.errors')
+
+                <div class="card">
+                    <div class="card-body" style="padding: var(--rv-space-5);">
+                        <form method="POST" action="{{ route('login.authenticate') }}" class="rv-stack">
+                            @csrf
+
+                            <div>
+                                <label for="email" class="form-label">Adres e-mail</label>
+                                <input id="email" name="email" type="email"
+                                       class="form-control @error('email') is-invalid @enderror"
+                                       value="{{ old('email') }}"
+                                       autocomplete="email"
+                                       required
+                                       @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
+                                @include('layouts.field-error', ['field' => 'email'])
+                            </div>
+
+                            <div>
+                                <label for="password" class="form-label">Hasło</label>
+                                <input id="password" name="password" type="password"
+                                       class="form-control @error('password') is-invalid @enderror"
+                                       autocomplete="current-password"
+                                       required
+                                       @error('password') aria-invalid="true" aria-describedby="password-error" @enderror>
+                                @include('layouts.field-error', ['field' => 'password'])
+                            </div>
+
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="remember" name="remember" value="1" @checked(old('remember'))>
+                                <label class="form-check-label" for="remember">Zapamiętaj mnie</label>
+                            </div>
+
+                            <button class="btn custom-btn w-100" type="submit">Zaloguj się</button>
+                        </form>
+                    </div>
+                </div>
+
+                <p class="text-center mt-4">
+                    Nie masz konta? <a href="{{ route('register') }}">Zarejestruj się</a>
+                </p>
             </div>
         </div>
-
-        @include('layouts.success')
-
-        @include('layouts.errors')
-
-        <div class="row d-flex justify-content-center">
-            <div class="col-10 col-sm-10 col-md-6 col-lg-4">
-                <form method="POST" action="{{ route('login.authenticate') }}" class="needs-validation" novalidate>
-                    @csrf
-                    <div class="form-group mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input id="email" name="email" type="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required autofocus>
-                        @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="password" class="form-label">Hasło</label>
-                        <input id="password" name="password" type="password" class="form-control @error('password') is-invalid @enderror" required>
-                        @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="form-group mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember" name="remember" value="1">
-                        <label class="form-check-label" for="remember">Zapamiętaj mnie</label>
-                    </div>
-
-                    <div class="text-center mt-4 mb-4">
-                        <button class="btn custom-btn" type="submit">Zaloguj się</button>
-                    </div>
-                    <p>Nie masz konta? <a href="{{ route('register') }}">Zarejestruj się</a></p>
-                </form>
-            </div>
-        </div>
-    </div>
+    </main>
 
     @include('layouts.footer', ['fixedBottom' => false])
-    <script src="{{ asset('js/login.js') }}"></script>
-    </script>
-
 </body>
 
 </html>

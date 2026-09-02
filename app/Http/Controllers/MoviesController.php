@@ -58,7 +58,7 @@ class MoviesController extends Controller
                 break;
         }
 
-        $movies = $query->paginate(6);
+        $movies = $query->paginate(6)->withQueryString();
 
         $promotionsEnabled = $this->movieService->arePromotionsEnabled();
         if ($promotionsEnabled) {
@@ -89,7 +89,8 @@ class MoviesController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-        $movies = Movie::where('available', 'dostępny')
+        $movies = Movie::with('category')
+                    ->where('available', 'dostępny')
                     ->where(function($queryBuilder) use ($query) {
                         $queryBuilder->where('title', 'LIKE', '%' . $query . '%')
                                         ->orWhere('director', 'LIKE', '%' . $query . '%')
@@ -98,8 +99,20 @@ class MoviesController extends Controller
                                             $queryBuilder->where('species', 'LIKE', '%' . $query . '%');
                                         });
                     })
-                    ->paginate(10); 
-        return view('movies.index', compact('movies'));
+                    ->paginate(10)
+                    ->withQueryString();
+
+        // The shared movies.index view reads $promotionsEnabled, so it must be
+        // provided here too - previously only index() supplied it, which made
+        // the search results page fail on an undefined variable.
+        $promotionsEnabled = $this->movieService->arePromotionsEnabled();
+        if ($promotionsEnabled) {
+            foreach ($movies as $movie) {
+                $movie->promo_price = $this->movieService->calculatePromoPrice($movie->price_day);
+            }
+        }
+
+        return view('movies.index', compact('movies', 'promotionsEnabled'));
     }
 
     public function image($id)
