@@ -15,7 +15,7 @@ else
 fi
 
 if [ $? -eq 1 ]; then
-   echo "Nie udalo sie utworzyc bazy danych."
+   echo "Failed to create the database."
    exit
 fi
 

@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# Instalacja zależności systemowych
+# System dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -17,29 +17,24 @@ RUN apt-get update && apt-get install -y \
 # Czyszczenie cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instalacja rozszerzeń PHP
+# PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl
 
-# Instalacja rozszerzenia Redis
+# Redis extension
 RUN pecl install redis && docker-php-ext-enable redis
 
-# Pobranie Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Instalacja Node.js i npm
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
-# Ustawienie katalogu roboczego
 WORKDIR /var/www/html
 
-# Kopiowanie konfiguracji nginx
 COPY .tools/docker/nginx.conf /etc/nginx/sites-available/default
 
-# Kopiowanie konfiguracji supervisord
 COPY .tools/docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Kopiowanie skryptu entrypoint
 COPY .tools/docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 

@@ -1,8 +1,8 @@
 {{--
-    Arkusz karuzeli ladowany razem z fragmentem, tak samo jak robi to
-    `layouts/slider.blade.php`. Bez niego reguly `.top-movies-slide { display:
-    none }` nie obowiazywaly i wszystkie dziesiec slajdow wyswietlalo sie naraz,
-    jeden pod drugim, z rozjezdzonymi tlami.
+  The carousel stylesheet loads together with the partial, the same way
+  `layouts/slider.blade.php` does it. Without it the
+  `.top-movies-slide { display: none }` rules did not apply and all ten slides
+  rendered at once, one below the other, with broken backgrounds.
 --}}
 <link rel="stylesheet" href="{{ asset('css/styleHome.css') }}">
 

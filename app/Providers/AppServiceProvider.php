@@ -18,12 +18,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         /*
-         * Adresy assetow budujemy z APP_URL, nie z naglowka zadania.
+         * Asset URLs are built from APP_URL, not from the request header.
          *
-         * W kontenerze nginx slucha na porcie 80, a 8000/8001 to dopiero
-         * mapowanie Dockera — PHP widzi wiec "localhost" bez portu i `asset()`
-         * generowal linki do http://localhost/css/..., czyli w pustke. Efekt:
-         * strona ladowala sie bez zadnych styli.
+         * In the container nginx listens on port 80 and 8000/8001 are only Docker
+         * mappings, so PHP sees "localhost" without a port and `asset()` generated
+         * links to http://localhost/css/..., which lead nowhere. The result: the page
+         * loaded without any styles.
          */
         if ($url = config('app.url')) {
             URL::forceRootUrl($url);
