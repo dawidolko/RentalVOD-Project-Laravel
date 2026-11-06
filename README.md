@@ -66,6 +66,12 @@ User ──< Loan >── Movie ──< Opinion
 
 ---
 
+## 🎬 Demo
+
+[![Watch the demo on YouTube](https://img.youtube.com/vi/uPIp8MLDDec/hqdefault.jpg)](https://www.youtube.com/watch?v=uPIp8MLDDec)
+
+---
+
 ## 🛠️ Technology Stack
 
 | Technology            | Version | Role                                                       |
