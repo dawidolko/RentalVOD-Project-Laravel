@@ -106,4 +106,5 @@
             </script>
         @endforeach
     @endisset
+    <script src="/a11y/a11y-panel.js" data-accent="#b3122a" defer></script>
 </head>
