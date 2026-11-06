@@ -145,4 +145,4 @@ RentalVOD-Project-Laravel/
 
 ## 📄 License
 
-MIT © [Dawid Olko](https://dawidolko.pl)
+The application code is MIT © [Dawid Olko](https://dawidolko.pl). Fonts and images keep their own terms, listed in [CREDITS.md](CREDITS.md).

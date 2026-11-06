@@ -73,7 +73,7 @@
     --rv-space-8: 4rem;
 
     /* Type scale (1.200 minor third, 16px base) */
-    --rv-font-sans: "Amazon Ember", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --rv-font-sans: "Nunito Sans", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --rv-text-xs: 0.75rem;
     --rv-text-sm: 0.875rem;
     --rv-text-base: 1rem;
